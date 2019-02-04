@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 
-	"local/geoalt/geoaltsvc"
+	"github.com/squiidz/geoalt/geoaltsvc"
 
 	"google.golang.org/grpc"
 )

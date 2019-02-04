@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	pb "local/geoalt/geoaltsvc"
+	pb "github.com/squiidz/geoalt/geoaltsvc"
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"

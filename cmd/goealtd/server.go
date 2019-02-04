@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang/geo/s2"
 
-	geo "local/geoalt"
-	pb "local/geoalt/geoaltsvc"
+	geo "github.com/squiidz/geoalt"
+	pb "github.com/squiidz/geoalt/geoaltsvc"
 )
 
 const cellLevel = 19

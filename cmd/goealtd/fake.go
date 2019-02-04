@@ -1,6 +1,6 @@
 package main
 
-import "local/geoalt"
+import "github.com/squiidz/geoalt"
 
 var fakeUsers = []geoalt.User{
 	{ID: 1, Email: "john@mail.com", Password: "a1b2c3d4", FirstName: "John", LastName: "Doe", Address: "New York"},
