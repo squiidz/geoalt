@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+service GeoAlt {
+  rpc CreateAlert(CreateReq) returns (CreateResp);
+  rpc GetAlert(GetAlertReq) returns (GetAlertResp);
+}
+
+message CreateReq {
+  uint32 user_id = 1;
+  double lat = 2;
+  double lng = 3;
+  string message = 4;
+}
+
+message CreateResp {
+  oneof status {
+    bool ok = 1;
+    string error = 2;
+  }
+}
+
+message GetAlertReq {
+  uint32 user_id = 1;
+  double lat = 2;
+  double lng = 3;
+}
+
+message GetAlertResp {
+  repeated Alert alerts = 1;
+}
+
+message Alert {
+  double lat = 1;
+  double lng = 2;
+  string message = 3;
+	string timestamp = 4;
+}
