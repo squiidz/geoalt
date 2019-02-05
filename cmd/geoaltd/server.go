@@ -77,14 +77,19 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 	if !ok || len(md.Get("token")) <= 0 {
 		return nil, errors.New("No Metadata")
 	}
-	if !tokenIsValid(md.Get("token")[0]) {
+	c, ok := tokenIsValid(md.Get("token")[0])
+	if !ok {
 		return nil, errors.New("Invalid Token please login")
 	}
 	cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
 	cellID := cell.ID().Parent(cellLevel)
 
 	var alerts []*pb.Alert
-	alertIDs := s.db.GetUserAlertIDs(uint64(cellID), req.UserId)
+	user, err := s.db.GetUserByEmail(c.Email)
+	if err != nil {
+		return nil, errors.New("Invalid credentials")
+	}
+	alertIDs := s.db.GetUserAlertIDs(uint64(cellID), user.ID)
 	for _, aid := range alertIDs {
 		alert, err := s.db.GetAlert(uint64(cellID), uint32(aid))
 		if err != nil {
@@ -108,23 +113,28 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 	if !ok || len(md.Get("token")) <= 0 {
 		return nil, errors.New("No Metadata")
 	}
-	if !tokenIsValid(md.Get("token")[0]) {
+	c, ok := tokenIsValid(md.Get("token")[0])
+	if !ok {
 		return nil, errors.New("Invalid Token please login")
 	}
 
 	cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
 	cellID := cell.ID().Parent(cellLevel)
 
+	u, err := s.db.GetUserByEmail(c.Email)
+	if err != nil {
+		return nil, errors.New("Invalid credentials")
+	}
 	alert := &geo.Alert{
 		CellID:    cellID,
 		Lat:       req.Lat,
 		Lng:       req.Lng,
-		UserID:    req.UserId,
+		UserID:    u.ID,
 		Message:   req.Message,
 		Timestamp: time.Now().Format(time.RFC3339Nano),
 	}
 
-	err := s.db.InsertAlert(alert)
+	err = s.db.InsertAlert(alert)
 	if err != nil {
 		return &pb.CreateAlertResp{Ok: false}, err
 	}

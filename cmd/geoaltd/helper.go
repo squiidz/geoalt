@@ -2,6 +2,8 @@ package main
 
 import (
 	"crypto/sha256"
+	"errors"
+	"log"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	geo "github.com/squiidz/geoalt"
@@ -9,14 +11,25 @@ import (
 
 const Secret = "somenotsosecretsecret"
 
+type Claim struct {
+	Email string `json:"email"`
+}
+
+func (c *Claim) Valid() error {
+	if c.Email != "" {
+		return nil
+	}
+	return errors.New("Invalid claim")
+}
+
 func hashPassword(p string) string {
 	h := sha256.New()
 	return string(h.Sum([]byte(p)))
 }
 
 func genToken(u *geo.User) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": u.Email,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claim{
+		Email: u.Email,
 	})
 	signToken, err := token.SignedString([]byte(Secret))
 	if err != nil {
@@ -25,13 +38,14 @@ func genToken(u *geo.User) (string, error) {
 	return signToken, nil
 }
 
-func tokenIsValid(t string) bool {
-	// _, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
-	// 	return token, nil
-	// })
-	// if err != nil {
-	// 	log.Println(err)
-	// 	return false
-	// }
-	return true
+func tokenIsValid(t string) (*Claim, bool) {
+	var claim Claim
+	_, err := jwt.ParseWithClaims(t, &claim, func(token *jwt.Token) (interface{}, error) {
+		return []byte(Secret), nil
+	})
+	if err != nil {
+		log.Println(err)
+		return &claim, false
+	}
+	return &claim, true
 }
