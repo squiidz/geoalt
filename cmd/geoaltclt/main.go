@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 
+	"google.golang.org/grpc/metadata"
+
 	pb "github.com/squiidz/geoalt/geoaltsvc"
 
 	"github.com/spf13/cobra"
@@ -37,7 +39,10 @@ func main() {
 			uid, _ := cmd.Flags().GetUint32("userID")
 			lat, _ := cmd.Flags().GetFloat64("lat")
 			lng, _ := cmd.Flags().GetFloat64("lng")
-			resp, err := gclt.GetAlert(context.Background(), &pb.GetAlertReq{
+			token, _ := cmd.Flags().GetString("token")
+			ctx := context.Background()
+			ctx = metadata.AppendToOutgoingContext(ctx, "token", token)
+			resp, err := gclt.GetAlert(ctx, &pb.GetAlertReq{
 				UserId: uid,
 				Lat:    lat,
 				Lng:    lng,
@@ -47,13 +52,15 @@ func main() {
 			}
 
 			for _, a := range resp.Alerts {
-				fmt.Println(a.String())
+				fmt.Println("----------------------------")
+				fmt.Printf("Message: %s\nLat: %f\nLng: %f\nTs: %s\n", a.Message, a.Lat, a.Lng, a.Timestamp)
 			}
 		},
 	}
 	fetch.Flags().Uint32("userID", 1, "-userID #id")
 	fetch.Flags().Float64("lat", 0, "-lat 2.33")
 	fetch.Flags().Float64("lng", 0, "-lng 3.44")
+	fetch.Flags().String("token", "", "-token tokenString")
 
 	create := &cobra.Command{
 		Use:   "create a new message",
@@ -65,7 +72,10 @@ func main() {
 			lat, _ := cmd.Flags().GetFloat64("lat")
 			lng, _ := cmd.Flags().GetFloat64("lng")
 			msg, _ := cmd.Flags().GetString("msg")
-			resp, err := gclt.CreateAlert(context.Background(), &pb.CreateReq{
+			token, _ := cmd.Flags().GetString("token")
+			ctx := context.Background()
+			ctx = metadata.AppendToOutgoingContext(ctx, "token", token)
+			resp, err := gclt.CreateAlert(ctx, &pb.CreateAlertReq{
 				UserId:  uid,
 				Lat:     lat,
 				Lng:     lng,
@@ -74,13 +84,16 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Println(resp.GetStatus())
+			if resp.Ok {
+				fmt.Println("Message created successfully")
+			}
 		},
 	}
 	create.Flags().Uint32("userID", 1, "-userID #id")
 	create.Flags().Float64("lat", 0, "-lat 2.33")
 	create.Flags().Float64("lng", 0, "-lng 3.44")
-	create.Flags().String("msg", "", "-msg mesaage content")
+	create.Flags().String("msg", "", "-msg message content")
+	create.Flags().String("token", "", "-token tokenString")
 
 	var rootCmd = &cobra.Command{Use: "geoclt"}
 	rootCmd.AddCommand(fetch, create)

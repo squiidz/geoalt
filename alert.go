@@ -40,7 +40,7 @@ func (a *Alert) SetAttr(attr string, value string) {
 	}
 }
 
-func (db *DB) GetAlert(cellID uint64, id uint32) (Alert, error) {
+func (db *DB) GetAlert(cellID uint64, id uint32) (*Alert, error) {
 	var alert Alert
 
 	txn := db.NewTransaction(false)
@@ -64,7 +64,7 @@ func (db *DB) GetAlert(cellID uint64, id uint32) (Alert, error) {
 	}
 	alert.ID = id
 	alert.CellID = s2.CellID(cellID)
-	return alert, nil
+	return &alert, nil
 }
 
 func (db *DB) GetUserAlertIDs(cellID uint64, id uint32) []int {

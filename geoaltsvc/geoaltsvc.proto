@@ -1,22 +1,42 @@
 syntax = "proto3";
 
 service GeoAlt {
-  rpc CreateAlert(CreateReq) returns (CreateResp);
+  rpc Login(LoginReq) returns (LoginResp);
+  rpc Register(RegisterReq) returns (RegisterResp);
+  rpc CreateAlert(CreateAlertReq) returns (CreateAlertResp);
   rpc GetAlert(GetAlertReq) returns (GetAlertResp);
 }
 
-message CreateReq {
+message RegisterReq {
+  string email = 1;
+  string password = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string address = 5;
+}
+
+message RegisterResp {
+  string token = 1;
+}
+
+message LoginReq {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResp {
+  string token = 1;
+}
+
+message CreateAlertReq {
   uint32 user_id = 1;
   double lat = 2;
   double lng = 3;
   string message = 4;
 }
 
-message CreateResp {
-  oneof status {
-    bool ok = 1;
-    string error = 2;
-  }
+message CreateAlertResp {
+  bool ok = 1;
 }
 
 message GetAlertReq {

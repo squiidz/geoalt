@@ -9,7 +9,7 @@ import (
 )
 
 type User struct {
-	ID        int
+	ID        uint32
 	Email     string `db:"email"`
 	Password  string `db:"password"`
 	FirstName string `db:"first_name"`
@@ -20,6 +20,11 @@ type User struct {
 func (u *User) Key(attr string) []byte {
 	// user:$user_id:$attribute_name = $value
 	return []byte(fmt.Sprintf("user:%d:%s", u.ID, attr))
+}
+
+func (u *User) KeyEmail() []byte {
+	// user:$email= $id
+	return []byte(fmt.Sprintf("user:%s", u.Email))
 }
 
 func (u *User) SetAttr(attr string, value string) {
@@ -75,7 +80,7 @@ func (db *DB) GetUserIDs(attr, value string) []int {
 	return userIDs
 }
 
-func (db *DB) GetUser(id int) (User, error) {
+func (db *DB) GetUser(id uint32) (*User, error) {
 	var user User
 
 	txn := db.NewTransaction(false)
@@ -92,8 +97,24 @@ func (db *DB) GetUser(id int) (User, error) {
 		})
 		itr.Next()
 	}
-	user.ID = id
-	return user, nil
+	user.ID = uint32(id)
+	return &user, nil
+}
+
+func (db *DB) GetUserByEmail(email string) (*User, error) {
+	var id uint32
+	txn := db.NewTransaction(false)
+	key := []byte(fmt.Sprintf("user:%s", email))
+
+	itm, err := txn.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	itm.Value(func(val []byte) error {
+		id = uint32FromBytes(val)
+		return nil
+	})
+	return db.GetUser(id)
 }
 
 func (db *DB) InsertUser(u *User) error {
@@ -103,5 +124,19 @@ func (db *DB) InsertUser(u *User) error {
 	txn.Set(u.Key("first_name"), []byte(u.FirstName))
 	txn.Set(u.Key("last_name"), []byte(u.LastName))
 	txn.Set(u.Key("address"), []byte(u.Address))
+	txn.Set(u.KeyEmail(), uint32ToBytes(u.ID))
 	return txn.Commit()
+}
+
+func (db *DB) UserSize() uint32 {
+	var count uint32
+	txn := db.NewTransaction(false)
+	itr := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer itr.Close()
+	itr.Seek([]byte("user"))
+	for itr.ValidForPrefix([]byte("user")) {
+		count++
+		itr.Next()
+	}
+	return count
 }

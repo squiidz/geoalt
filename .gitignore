@@ -1,3 +1,4 @@
 cmd/geoaltclt/geoaltclt
 cmd/geoaltd/geoaltd
 cmd/geoaltd/badger/
+geoalt/

@@ -23,7 +23,199 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type CreateReq struct {
+type RegisterReq struct {
+	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	FirstName            string   `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName             string   `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Address              string   `protobuf:"bytes,5,opt,name=address,proto3" json:"address,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RegisterReq) Reset()         { *m = RegisterReq{} }
+func (m *RegisterReq) String() string { return proto.CompactTextString(m) }
+func (*RegisterReq) ProtoMessage()    {}
+func (*RegisterReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{0}
+}
+func (m *RegisterReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegisterReq.Unmarshal(m, b)
+}
+func (m *RegisterReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegisterReq.Marshal(b, m, deterministic)
+}
+func (dst *RegisterReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegisterReq.Merge(dst, src)
+}
+func (m *RegisterReq) XXX_Size() int {
+	return xxx_messageInfo_RegisterReq.Size(m)
+}
+func (m *RegisterReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegisterReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RegisterReq proto.InternalMessageInfo
+
+func (m *RegisterReq) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *RegisterReq) GetPassword() string {
+	if m != nil {
+		return m.Password
+	}
+	return ""
+}
+
+func (m *RegisterReq) GetFirstName() string {
+	if m != nil {
+		return m.FirstName
+	}
+	return ""
+}
+
+func (m *RegisterReq) GetLastName() string {
+	if m != nil {
+		return m.LastName
+	}
+	return ""
+}
+
+func (m *RegisterReq) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+type RegisterResp struct {
+	Token                string   `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RegisterResp) Reset()         { *m = RegisterResp{} }
+func (m *RegisterResp) String() string { return proto.CompactTextString(m) }
+func (*RegisterResp) ProtoMessage()    {}
+func (*RegisterResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{1}
+}
+func (m *RegisterResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegisterResp.Unmarshal(m, b)
+}
+func (m *RegisterResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegisterResp.Marshal(b, m, deterministic)
+}
+func (dst *RegisterResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegisterResp.Merge(dst, src)
+}
+func (m *RegisterResp) XXX_Size() int {
+	return xxx_messageInfo_RegisterResp.Size(m)
+}
+func (m *RegisterResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegisterResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RegisterResp proto.InternalMessageInfo
+
+func (m *RegisterResp) GetToken() string {
+	if m != nil {
+		return m.Token
+	}
+	return ""
+}
+
+type LoginReq struct {
+	Email                string   `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LoginReq) Reset()         { *m = LoginReq{} }
+func (m *LoginReq) String() string { return proto.CompactTextString(m) }
+func (*LoginReq) ProtoMessage()    {}
+func (*LoginReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{2}
+}
+func (m *LoginReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LoginReq.Unmarshal(m, b)
+}
+func (m *LoginReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LoginReq.Marshal(b, m, deterministic)
+}
+func (dst *LoginReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginReq.Merge(dst, src)
+}
+func (m *LoginReq) XXX_Size() int {
+	return xxx_messageInfo_LoginReq.Size(m)
+}
+func (m *LoginReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LoginReq proto.InternalMessageInfo
+
+func (m *LoginReq) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *LoginReq) GetPassword() string {
+	if m != nil {
+		return m.Password
+	}
+	return ""
+}
+
+type LoginResp struct {
+	Token                string   `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LoginResp) Reset()         { *m = LoginResp{} }
+func (m *LoginResp) String() string { return proto.CompactTextString(m) }
+func (*LoginResp) ProtoMessage()    {}
+func (*LoginResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{3}
+}
+func (m *LoginResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LoginResp.Unmarshal(m, b)
+}
+func (m *LoginResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LoginResp.Marshal(b, m, deterministic)
+}
+func (dst *LoginResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginResp.Merge(dst, src)
+}
+func (m *LoginResp) XXX_Size() int {
+	return xxx_messageInfo_LoginResp.Size(m)
+}
+func (m *LoginResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LoginResp proto.InternalMessageInfo
+
+func (m *LoginResp) GetToken() string {
+	if m != nil {
+		return m.Token
+	}
+	return ""
+}
+
+type CreateAlertReq struct {
 	UserId               uint32   `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Lat                  float64  `protobuf:"fixed64,2,opt,name=lat,proto3" json:"lat,omitempty"`
 	Lng                  float64  `protobuf:"fixed64,3,opt,name=lng,proto3" json:"lng,omitempty"`
@@ -33,196 +225,94 @@ type CreateReq struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateReq) Reset()         { *m = CreateReq{} }
-func (m *CreateReq) String() string { return proto.CompactTextString(m) }
-func (*CreateReq) ProtoMessage()    {}
-func (*CreateReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_574fd7bc6d7cef6a, []int{0}
+func (m *CreateAlertReq) Reset()         { *m = CreateAlertReq{} }
+func (m *CreateAlertReq) String() string { return proto.CompactTextString(m) }
+func (*CreateAlertReq) ProtoMessage()    {}
+func (*CreateAlertReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{4}
 }
-func (m *CreateReq) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateReq.Unmarshal(m, b)
+func (m *CreateAlertReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateAlertReq.Unmarshal(m, b)
 }
-func (m *CreateReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateReq.Marshal(b, m, deterministic)
+func (m *CreateAlertReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateAlertReq.Marshal(b, m, deterministic)
 }
-func (dst *CreateReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateReq.Merge(dst, src)
+func (dst *CreateAlertReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateAlertReq.Merge(dst, src)
 }
-func (m *CreateReq) XXX_Size() int {
-	return xxx_messageInfo_CreateReq.Size(m)
+func (m *CreateAlertReq) XXX_Size() int {
+	return xxx_messageInfo_CreateAlertReq.Size(m)
 }
-func (m *CreateReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateReq.DiscardUnknown(m)
+func (m *CreateAlertReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateAlertReq.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateReq proto.InternalMessageInfo
+var xxx_messageInfo_CreateAlertReq proto.InternalMessageInfo
 
-func (m *CreateReq) GetUserId() uint32 {
+func (m *CreateAlertReq) GetUserId() uint32 {
 	if m != nil {
 		return m.UserId
 	}
 	return 0
 }
 
-func (m *CreateReq) GetLat() float64 {
+func (m *CreateAlertReq) GetLat() float64 {
 	if m != nil {
 		return m.Lat
 	}
 	return 0
 }
 
-func (m *CreateReq) GetLng() float64 {
+func (m *CreateAlertReq) GetLng() float64 {
 	if m != nil {
 		return m.Lng
 	}
 	return 0
 }
 
-func (m *CreateReq) GetMessage() string {
+func (m *CreateAlertReq) GetMessage() string {
 	if m != nil {
 		return m.Message
 	}
 	return ""
 }
 
-type CreateResp struct {
-	// Types that are valid to be assigned to Status:
-	//	*CreateResp_Ok
-	//	*CreateResp_Error
-	Status               isCreateResp_Status `protobuf_oneof:"status"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
+type CreateAlertResp struct {
+	Ok                   bool     `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateResp) Reset()         { *m = CreateResp{} }
-func (m *CreateResp) String() string { return proto.CompactTextString(m) }
-func (*CreateResp) ProtoMessage()    {}
-func (*CreateResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_574fd7bc6d7cef6a, []int{1}
+func (m *CreateAlertResp) Reset()         { *m = CreateAlertResp{} }
+func (m *CreateAlertResp) String() string { return proto.CompactTextString(m) }
+func (*CreateAlertResp) ProtoMessage()    {}
+func (*CreateAlertResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{5}
 }
-func (m *CreateResp) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateResp.Unmarshal(m, b)
+func (m *CreateAlertResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateAlertResp.Unmarshal(m, b)
 }
-func (m *CreateResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateResp.Marshal(b, m, deterministic)
+func (m *CreateAlertResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateAlertResp.Marshal(b, m, deterministic)
 }
-func (dst *CreateResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateResp.Merge(dst, src)
+func (dst *CreateAlertResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateAlertResp.Merge(dst, src)
 }
-func (m *CreateResp) XXX_Size() int {
-	return xxx_messageInfo_CreateResp.Size(m)
+func (m *CreateAlertResp) XXX_Size() int {
+	return xxx_messageInfo_CreateAlertResp.Size(m)
 }
-func (m *CreateResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateResp.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateResp proto.InternalMessageInfo
-
-type isCreateResp_Status interface {
-	isCreateResp_Status()
+func (m *CreateAlertResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateAlertResp.DiscardUnknown(m)
 }
 
-type CreateResp_Ok struct {
-	Ok bool `protobuf:"varint,1,opt,name=ok,proto3,oneof"`
-}
+var xxx_messageInfo_CreateAlertResp proto.InternalMessageInfo
 
-type CreateResp_Error struct {
-	Error string `protobuf:"bytes,2,opt,name=error,proto3,oneof"`
-}
-
-func (*CreateResp_Ok) isCreateResp_Status() {}
-
-func (*CreateResp_Error) isCreateResp_Status() {}
-
-func (m *CreateResp) GetStatus() isCreateResp_Status {
+func (m *CreateAlertResp) GetOk() bool {
 	if m != nil {
-		return m.Status
-	}
-	return nil
-}
-
-func (m *CreateResp) GetOk() bool {
-	if x, ok := m.GetStatus().(*CreateResp_Ok); ok {
-		return x.Ok
+		return m.Ok
 	}
 	return false
-}
-
-func (m *CreateResp) GetError() string {
-	if x, ok := m.GetStatus().(*CreateResp_Error); ok {
-		return x.Error
-	}
-	return ""
-}
-
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*CreateResp) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _CreateResp_OneofMarshaler, _CreateResp_OneofUnmarshaler, _CreateResp_OneofSizer, []interface{}{
-		(*CreateResp_Ok)(nil),
-		(*CreateResp_Error)(nil),
-	}
-}
-
-func _CreateResp_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*CreateResp)
-	// status
-	switch x := m.Status.(type) {
-	case *CreateResp_Ok:
-		t := uint64(0)
-		if x.Ok {
-			t = 1
-		}
-		b.EncodeVarint(1<<3 | proto.WireVarint)
-		b.EncodeVarint(t)
-	case *CreateResp_Error:
-		b.EncodeVarint(2<<3 | proto.WireBytes)
-		b.EncodeStringBytes(x.Error)
-	case nil:
-	default:
-		return fmt.Errorf("CreateResp.Status has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _CreateResp_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*CreateResp)
-	switch tag {
-	case 1: // status.ok
-		if wire != proto.WireVarint {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeVarint()
-		m.Status = &CreateResp_Ok{x != 0}
-		return true, err
-	case 2: // status.error
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Status = &CreateResp_Error{x}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _CreateResp_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*CreateResp)
-	// status
-	switch x := m.Status.(type) {
-	case *CreateResp_Ok:
-		n += 1 // tag and wire
-		n += 1
-	case *CreateResp_Error:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.Error)))
-		n += len(x.Error)
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 type GetAlertReq struct {
@@ -238,7 +328,7 @@ func (m *GetAlertReq) Reset()         { *m = GetAlertReq{} }
 func (m *GetAlertReq) String() string { return proto.CompactTextString(m) }
 func (*GetAlertReq) ProtoMessage()    {}
 func (*GetAlertReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_574fd7bc6d7cef6a, []int{2}
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{6}
 }
 func (m *GetAlertReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetAlertReq.Unmarshal(m, b)
@@ -290,7 +380,7 @@ func (m *GetAlertResp) Reset()         { *m = GetAlertResp{} }
 func (m *GetAlertResp) String() string { return proto.CompactTextString(m) }
 func (*GetAlertResp) ProtoMessage()    {}
 func (*GetAlertResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_574fd7bc6d7cef6a, []int{3}
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{7}
 }
 func (m *GetAlertResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetAlertResp.Unmarshal(m, b)
@@ -331,7 +421,7 @@ func (m *Alert) Reset()         { *m = Alert{} }
 func (m *Alert) String() string { return proto.CompactTextString(m) }
 func (*Alert) ProtoMessage()    {}
 func (*Alert) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_574fd7bc6d7cef6a, []int{4}
+	return fileDescriptor_geoaltsvc_7fb144fa92e25619, []int{8}
 }
 func (m *Alert) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Alert.Unmarshal(m, b)
@@ -380,8 +470,12 @@ func (m *Alert) GetTimestamp() string {
 }
 
 func init() {
-	proto.RegisterType((*CreateReq)(nil), "CreateReq")
-	proto.RegisterType((*CreateResp)(nil), "CreateResp")
+	proto.RegisterType((*RegisterReq)(nil), "RegisterReq")
+	proto.RegisterType((*RegisterResp)(nil), "RegisterResp")
+	proto.RegisterType((*LoginReq)(nil), "LoginReq")
+	proto.RegisterType((*LoginResp)(nil), "LoginResp")
+	proto.RegisterType((*CreateAlertReq)(nil), "CreateAlertReq")
+	proto.RegisterType((*CreateAlertResp)(nil), "CreateAlertResp")
 	proto.RegisterType((*GetAlertReq)(nil), "GetAlertReq")
 	proto.RegisterType((*GetAlertResp)(nil), "GetAlertResp")
 	proto.RegisterType((*Alert)(nil), "Alert")
@@ -399,7 +493,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type GeoAltClient interface {
-	CreateAlert(ctx context.Context, in *CreateReq, opts ...grpc.CallOption) (*CreateResp, error)
+	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
+	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
+	CreateAlert(ctx context.Context, in *CreateAlertReq, opts ...grpc.CallOption) (*CreateAlertResp, error)
 	GetAlert(ctx context.Context, in *GetAlertReq, opts ...grpc.CallOption) (*GetAlertResp, error)
 }
 
@@ -411,8 +507,26 @@ func NewGeoAltClient(cc *grpc.ClientConn) GeoAltClient {
 	return &geoAltClient{cc}
 }
 
-func (c *geoAltClient) CreateAlert(ctx context.Context, in *CreateReq, opts ...grpc.CallOption) (*CreateResp, error) {
-	out := new(CreateResp)
+func (c *geoAltClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error) {
+	out := new(LoginResp)
+	err := c.cc.Invoke(ctx, "/GeoAlt/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *geoAltClient) Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error) {
+	out := new(RegisterResp)
+	err := c.cc.Invoke(ctx, "/GeoAlt/Register", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *geoAltClient) CreateAlert(ctx context.Context, in *CreateAlertReq, opts ...grpc.CallOption) (*CreateAlertResp, error) {
+	out := new(CreateAlertResp)
 	err := c.cc.Invoke(ctx, "/GeoAlt/CreateAlert", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -431,7 +545,9 @@ func (c *geoAltClient) GetAlert(ctx context.Context, in *GetAlertReq, opts ...gr
 
 // GeoAltServer is the server API for GeoAlt service.
 type GeoAltServer interface {
-	CreateAlert(context.Context, *CreateReq) (*CreateResp, error)
+	Login(context.Context, *LoginReq) (*LoginResp, error)
+	Register(context.Context, *RegisterReq) (*RegisterResp, error)
+	CreateAlert(context.Context, *CreateAlertReq) (*CreateAlertResp, error)
 	GetAlert(context.Context, *GetAlertReq) (*GetAlertResp, error)
 }
 
@@ -439,8 +555,44 @@ func RegisterGeoAltServer(s *grpc.Server, srv GeoAltServer) {
 	s.RegisterService(&_GeoAlt_serviceDesc, srv)
 }
 
+func _GeoAlt_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GeoAltServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/GeoAlt/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GeoAltServer).Login(ctx, req.(*LoginReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GeoAlt_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GeoAltServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/GeoAlt/Register",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GeoAltServer).Register(ctx, req.(*RegisterReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _GeoAlt_CreateAlert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateReq)
+	in := new(CreateAlertReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -452,7 +604,7 @@ func _GeoAlt_CreateAlert_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/GeoAlt/CreateAlert",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GeoAltServer).CreateAlert(ctx, req.(*CreateReq))
+		return srv.(GeoAltServer).CreateAlert(ctx, req.(*CreateAlertReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -480,6 +632,14 @@ var _GeoAlt_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*GeoAltServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Login",
+			Handler:    _GeoAlt_Login_Handler,
+		},
+		{
+			MethodName: "Register",
+			Handler:    _GeoAlt_Register_Handler,
+		},
+		{
 			MethodName: "CreateAlert",
 			Handler:    _GeoAlt_CreateAlert_Handler,
 		},
@@ -492,26 +652,34 @@ var _GeoAlt_serviceDesc = grpc.ServiceDesc{
 	Metadata: "geoaltsvc.proto",
 }
 
-func init() { proto.RegisterFile("geoaltsvc.proto", fileDescriptor_geoaltsvc_574fd7bc6d7cef6a) }
+func init() { proto.RegisterFile("geoaltsvc.proto", fileDescriptor_geoaltsvc_7fb144fa92e25619) }
 
-var fileDescriptor_geoaltsvc_574fd7bc6d7cef6a = []byte{
-	// 284 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x91, 0x4d, 0x4f, 0xc2, 0x40,
-	0x10, 0x86, 0xd9, 0x56, 0x16, 0x3a, 0x85, 0x48, 0xf6, 0xa0, 0x1b, 0x62, 0x4c, 0xd3, 0x83, 0xf6,
-	0xb4, 0x07, 0xfc, 0x03, 0xa2, 0x07, 0xd0, 0xe3, 0xde, 0x3c, 0x99, 0x05, 0x26, 0x0d, 0xa1, 0xb0,
-	0x75, 0x77, 0xf0, 0xf7, 0x1b, 0xfa, 0x21, 0x35, 0x7a, 0xf3, 0xd6, 0xf7, 0x6d, 0xf2, 0xcc, 0xce,
-	0x33, 0x70, 0x99, 0xa3, 0x35, 0x05, 0xf9, 0xcf, 0xb5, 0x2a, 0x9d, 0x25, 0x9b, 0xae, 0x20, 0x7a,
-	0x76, 0x68, 0x08, 0x35, 0x7e, 0x88, 0x6b, 0x18, 0x1c, 0x3d, 0xba, 0xf7, 0xed, 0x46, 0xb2, 0x84,
-	0x65, 0x63, 0xcd, 0x4f, 0xf1, 0x65, 0x23, 0x26, 0x10, 0x16, 0x86, 0x64, 0x90, 0xb0, 0x8c, 0xe9,
-	0xd3, 0x67, 0xd5, 0x1c, 0x72, 0x19, 0x36, 0xcd, 0x21, 0x17, 0x12, 0x06, 0x7b, 0xf4, 0xde, 0xe4,
-	0x28, 0x2f, 0x12, 0x96, 0x45, 0xba, 0x8d, 0xe9, 0x23, 0x40, 0x3b, 0xc3, 0x97, 0x62, 0x02, 0x81,
-	0xdd, 0x55, 0xfc, 0xe1, 0xb2, 0xa7, 0x03, 0xbb, 0x13, 0x57, 0xd0, 0x47, 0xe7, 0xac, 0xab, 0xf8,
-	0xd1, 0xb2, 0xa7, 0xeb, 0xf8, 0x34, 0x04, 0xee, 0xc9, 0xd0, 0xd1, 0xa7, 0xaf, 0x10, 0x2f, 0x90,
-	0xe6, 0x05, 0x3a, 0xfa, 0xef, 0x3b, 0x53, 0x05, 0xa3, 0x33, 0xcb, 0x97, 0xe2, 0x16, 0xb8, 0x39,
-	0x05, 0x2f, 0x59, 0x12, 0x66, 0xf1, 0x8c, 0xab, 0xfa, 0x5f, 0xd3, 0xa6, 0x6b, 0xe8, 0x57, 0x45,
-	0x0b, 0x67, 0xbf, 0xe0, 0xc1, 0x9f, 0x12, 0xc2, 0x1f, 0x12, 0xc4, 0x0d, 0x44, 0xb4, 0xdd, 0xa3,
-	0x27, 0xb3, 0x2f, 0x1b, 0x41, 0xe7, 0x62, 0xf6, 0x06, 0x7c, 0x81, 0x76, 0x5e, 0x90, 0xb8, 0x83,
-	0xb8, 0x96, 0x55, 0x0f, 0x05, 0xf5, 0x7d, 0x9e, 0x69, 0xac, 0x3a, 0x1a, 0xef, 0x61, 0xd8, 0xae,
-	0x21, 0x46, 0xaa, 0x63, 0x67, 0x3a, 0x56, 0xdd, 0xfd, 0x56, 0xbc, 0x3a, 0xf4, 0xc3, 0x57, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x90, 0x9f, 0x7c, 0xed, 0xfb, 0x01, 0x00, 0x00,
+var fileDescriptor_geoaltsvc_7fb144fa92e25619 = []byte{
+	// 401 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0x4d, 0x8f, 0xd3, 0x30,
+	0x10, 0x55, 0x12, 0x92, 0x4d, 0x26, 0xe9, 0x76, 0x65, 0x21, 0x11, 0x05, 0x58, 0xb5, 0x16, 0x52,
+	0x7b, 0xb2, 0x50, 0xb9, 0x72, 0xa9, 0x38, 0x54, 0x20, 0xc4, 0x21, 0x7f, 0xa0, 0x32, 0xcd, 0x10,
+	0x45, 0x4d, 0xe2, 0x60, 0x1b, 0xf8, 0x25, 0xfc, 0x0b, 0x7e, 0x24, 0xb2, 0x5b, 0x93, 0x84, 0x8f,
+	0x0b, 0xda, 0x5b, 0xdf, 0x7b, 0xf5, 0xcc, 0x9b, 0x37, 0x13, 0x58, 0xd6, 0x28, 0x78, 0xab, 0xd5,
+	0xd7, 0x13, 0x1b, 0xa4, 0xd0, 0x82, 0x7e, 0xf7, 0x20, 0x2d, 0xb1, 0x6e, 0x94, 0x46, 0x59, 0xe2,
+	0x67, 0xf2, 0x18, 0x42, 0xec, 0x78, 0xd3, 0xe6, 0xde, 0xca, 0xdb, 0x26, 0xe5, 0x05, 0x90, 0x02,
+	0xe2, 0x81, 0x2b, 0xf5, 0x4d, 0xc8, 0x2a, 0xf7, 0xad, 0xf0, 0x0b, 0x93, 0xe7, 0x00, 0x9f, 0x1a,
+	0xa9, 0xf4, 0xb1, 0xe7, 0x1d, 0xe6, 0x81, 0x55, 0x13, 0xcb, 0x7c, 0xe0, 0x1d, 0x92, 0xa7, 0x90,
+	0xb4, 0xdc, 0xa9, 0x8f, 0x2e, 0x6f, 0x0d, 0x61, 0xc5, 0x1c, 0x6e, 0x78, 0x55, 0x49, 0x54, 0x2a,
+	0x0f, 0xad, 0xe4, 0x20, 0x7d, 0x01, 0xd9, 0x68, 0x4b, 0x0d, 0xc6, 0x97, 0x16, 0x67, 0xec, 0x9d,
+	0x2f, 0x0b, 0xe8, 0x6b, 0x88, 0xdf, 0x8b, 0xba, 0xe9, 0xff, 0xcb, 0x39, 0x5d, 0x43, 0x72, 0x7d,
+	0xfd, 0xcf, 0x06, 0x35, 0xdc, 0xbe, 0x91, 0xc8, 0x35, 0xee, 0x5b, 0x94, 0xda, 0xb4, 0x79, 0x02,
+	0x37, 0x5f, 0x14, 0xca, 0x63, 0x53, 0xd9, 0x7f, 0x2e, 0xca, 0xc8, 0xc0, 0xb7, 0x15, 0xb9, 0x83,
+	0xa0, 0xe5, 0xda, 0x36, 0xf1, 0x4a, 0xf3, 0xd3, 0x32, 0x7d, 0x6d, 0x23, 0x31, 0x4c, 0x5f, 0x9b,
+	0x79, 0x3b, 0x54, 0x8a, 0xd7, 0x2e, 0x0a, 0x07, 0xe9, 0x1a, 0x96, 0xb3, 0x46, 0x6a, 0x20, 0xb7,
+	0xe0, 0x8b, 0xb3, 0x6d, 0x12, 0x97, 0xbe, 0x38, 0xd3, 0x77, 0x90, 0x1e, 0x50, 0x3f, 0x88, 0x11,
+	0xca, 0x20, 0x1b, 0x6b, 0xa9, 0x81, 0xdc, 0x43, 0xc4, 0x0d, 0x50, 0xb9, 0xb7, 0x0a, 0xb6, 0xe9,
+	0x2e, 0x62, 0x17, 0xed, 0xca, 0xd2, 0x13, 0x84, 0x96, 0x70, 0xc5, 0xbd, 0x3f, 0x8a, 0xfb, 0x7f,
+	0x9d, 0x32, 0x98, 0x4d, 0x49, 0x9e, 0x41, 0xa2, 0x9b, 0x0e, 0x95, 0xe6, 0xdd, 0x70, 0x4d, 0x60,
+	0x24, 0x76, 0x3f, 0x3c, 0x88, 0x0e, 0x28, 0xf6, 0xad, 0x26, 0xf7, 0x10, 0xda, 0xd5, 0x90, 0x84,
+	0xb9, 0x05, 0x17, 0xc0, 0xc6, 0x6d, 0x6d, 0x20, 0x76, 0xe7, 0x41, 0x32, 0x36, 0x39, 0xe0, 0x62,
+	0xc1, 0x66, 0x77, 0xf3, 0x12, 0xd2, 0x49, 0xae, 0x64, 0xc9, 0xe6, 0xeb, 0x2c, 0xee, 0xd8, 0xef,
+	0xb1, 0x6f, 0x20, 0x76, 0xd1, 0x90, 0x8c, 0x4d, 0x12, 0x2f, 0x16, 0x6c, 0x9a, 0xd9, 0xc7, 0xc8,
+	0x7e, 0x41, 0xaf, 0x7e, 0x06, 0x00, 0x00, 0xff, 0xff, 0xb6, 0x19, 0xd8, 0x3e, 0x54, 0x03, 0x00,
+	0x00,
 }
