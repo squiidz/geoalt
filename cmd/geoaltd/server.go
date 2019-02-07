@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -21,7 +20,7 @@ type Server struct {
 }
 
 func New() *Server {
-	db, err := geo.NewDB("badger")
+	db, err := geo.NewDB("userdb", "alertdb")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,19 +28,18 @@ func New() *Server {
 }
 
 func (s Server) Register(context context.Context, req *pb.RegisterReq) (*pb.RegisterResp, error) {
-	_, err := s.db.GetUserByEmail(req.Email)
+	_, err := s.db.UserStore.GetUserByEmail(req.Email)
 	if err == nil {
 		return nil, errors.New("User already exist")
 	}
 	user := &geo.User{
-		ID:        s.db.UserSize() + 1,
 		Email:     req.Email,
 		Password:  hashPassword(req.Password),
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Address:   req.Address,
 	}
-	err = s.db.InsertUser(user)
+	err = s.db.UserStore.Insert(user)
 	if err != nil {
 		return nil, err
 	}
@@ -55,11 +53,10 @@ func (s Server) Register(context context.Context, req *pb.RegisterReq) (*pb.Regi
 }
 
 func (s Server) Login(context context.Context, req *pb.LoginReq) (*pb.LoginResp, error) {
-	u, err := s.db.GetUserByEmail(req.Email)
+	u, err := s.db.UserStore.GetUserByEmail(req.Email)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Login User:", *u)
 	if u.Password != hashPassword(req.Password) {
 		return nil, errors.New("Invalid Credentials")
 	}
@@ -85,13 +82,13 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 	cellID := cell.ID().Parent(cellLevel)
 
 	var alerts []*pb.Alert
-	user, err := s.db.GetUserByEmail(c.Email)
+	user, err := s.db.UserStore.GetUserByEmail(c.Email)
 	if err != nil {
 		return nil, errors.New("Invalid credentials")
 	}
-	alertIDs := s.db.GetUserAlertIDs(uint64(cellID), user.ID)
+	alertIDs := s.db.AlertStore.GetUserAlertIDs(uint64(cellID), user.ID)
 	for _, aid := range alertIDs {
-		alert, err := s.db.GetAlert(uint64(cellID), uint32(aid))
+		alert, err := s.db.AlertStore.GetAlert(uint64(cellID), user.ID, uint32(aid))
 		if err != nil {
 			return nil, err
 		}
@@ -121,7 +118,7 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 	cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
 	cellID := cell.ID().Parent(cellLevel)
 
-	u, err := s.db.GetUserByEmail(c.Email)
+	u, err := s.db.UserStore.GetUserByEmail(c.Email)
 	if err != nil {
 		return nil, errors.New("Invalid credentials")
 	}
@@ -132,9 +129,10 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 		UserID:    u.ID,
 		Message:   req.Message,
 		Timestamp: time.Now().Format(time.RFC3339Nano),
+		Ephemeral: req.Ephemeral,
 	}
 
-	err = s.db.InsertAlert(alert)
+	err = s.db.AlertStore.Insert(alert)
 	if err != nil {
 		return &pb.CreateAlertResp{Ok: false}, err
 	}

@@ -1,6 +1,7 @@
 package geoalt
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -10,6 +11,10 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
+type AlertStore struct {
+	*badger.DB
+}
+
 type Alert struct {
 	ID        uint32
 	CellID    s2.CellID
@@ -18,94 +23,124 @@ type Alert struct {
 	UserID    uint32
 	Message   string
 	Timestamp string
+	Ephemeral bool
 }
 
 func (a *Alert) Key(attr string) []byte {
 	// alert:$alert_id:$user_id:$attribute_name = $value
-	return []byte(fmt.Sprintf("alert:%d:%d:%d:%s", a.CellID, a.ID, a.UserID, attr))
+	return []byte(fmt.Sprintf("alert:%d:%d:%d:%s", a.UserID, a.CellID, a.ID, attr))
 }
 
-func (a *Alert) SetAttr(attr string, value string) {
+func (a *Alert) SetAttr(attr string, value []byte) {
 	switch attr {
 	case "message":
-		a.Message = value
+		a.Message = string(value)
 	case "timestamp":
-		a.Timestamp = value
+		a.Timestamp = string(value)
 	case "latitude":
-		v := []byte(value)
-		a.Lat = float64fromBytes(v)
+		a.Lat = float64fromBytes(value)
 	case "longitude":
-		v := []byte(value)
-		a.Lng = float64fromBytes(v)
+		a.Lng = float64fromBytes(value)
+	case "ephemeral":
+		a.Ephemeral = boolFromBytes(value)
 	}
 }
 
-func (db *DB) GetAlert(cellID uint64, id uint32) (*Alert, error) {
+func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert, error) {
 	var alert Alert
 
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer itr.Close()
-	pre := []byte(fmt.Sprintf("alert:%d:%d", cellID, id))
+	pre := []byte(fmt.Sprintf("alert:%d:%d:%d", userID, cellID, id))
 	itr.Seek([]byte(pre))
 	for itr.ValidForPrefix(pre) {
 		keySplit := strings.Split(string(itr.Item().Key()), ":")
 		attr := keySplit[len(keySplit)-1]
 		itr.Item().Value(func(val []byte) error {
-			alert.SetAttr(attr, string(val))
+			alert.SetAttr(attr, val)
 			return nil
 		})
-		uid, err := strconv.Atoi(keySplit[3])
-		if err != nil {
-			continue
-		}
-		alert.UserID = uint32(uid)
+		alert.UserID = userID
 		itr.Next()
 	}
 	alert.ID = id
 	alert.CellID = s2.CellID(cellID)
+	if alert.Ephemeral {
+		db.Delete(&alert)
+	}
 	return &alert, nil
 }
 
-func (db *DB) GetUserAlertIDs(cellID uint64, id uint32) []int {
+func (db *AlertStore) GetUserAlertIDs(cellID uint64, userID uint32) []int {
 	var alertIDs []int
 
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer itr.Close()
-	pre := []byte(fmt.Sprintf("alert:%d", cellID))
+	pre := []byte(fmt.Sprintf("alert:%d:%d", userID, cellID))
 	itr.Seek([]byte(pre))
 	for itr.ValidForPrefix(pre) {
 		keySplit := strings.Split(string(itr.Item().Key()), ":")
-		userID, err := strconv.Atoi(keySplit[3])
+		aID, err := strconv.Atoi(keySplit[3])
 		if err != nil {
 			continue
 		}
-		if uint32(userID) == id {
-			aID, err := strconv.Atoi(keySplit[2])
-			if err != nil {
-				continue
-			}
-			if !contains(alertIDs, aID) {
-				alertIDs = append(alertIDs, aID)
-			}
+		if !contains(alertIDs, aID) {
+			alertIDs = append(alertIDs, aID)
 		}
 		itr.Next()
 	}
 	return alertIDs
 }
 
-func (db *DB) InsertAlert(a *Alert) error {
+func (db *AlertStore) Insert(a *Alert) error {
+	if db.Exist(a) {
+		return errors.New("Alert already exist")
+	}
+	var err error
 	txn := db.NewTransaction(true)
-	a.ID = db.AlertSize()
-	txn.Set(a.Key("message"), []byte(a.Message))
-	txn.Set(a.Key("timestamp"), []byte(a.Timestamp))
-	txn.Set(a.Key("latitude"), float64ToBytes(a.Lat))
-	txn.Set(a.Key("longitude"), float64ToBytes(a.Lng))
+	a.ID = db.Size() + 1
+	if err = txn.Set(a.Key("message"), []byte(a.Message)); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("timestamp"), []byte(a.Timestamp)); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("latitude"), float64ToBytes(a.Lat)); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("longitude"), float64ToBytes(a.Lng)); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("ephemeral"), boolToBytes(a.Ephemeral)); err != nil {
+		return err
+	}
 	return txn.Commit()
 }
 
-func (db *DB) AlertSize() uint32 {
+func (db *AlertStore) Delete(a *Alert) error {
+	var err error
+	txn := db.NewTransaction(true)
+	if err = txn.Delete(a.Key("message")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("timestamp")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("latitude")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("ephemeral")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("longitude")); err != nil {
+		return err
+	}
+	return txn.Commit()
+}
+
+func (db *AlertStore) Size() uint32 {
 	var count uint32
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
@@ -117,3 +152,34 @@ func (db *DB) AlertSize() uint32 {
 	}
 	return count
 }
+
+func (db *AlertStore) Exist(a *Alert) bool {
+	exist := false
+	txn := db.NewTransaction(false)
+	itr := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer itr.Close()
+	pre := []byte(fmt.Sprintf("alert:%d:%d", a.UserID, a.CellID))
+	itr.Seek(pre)
+	for itr.ValidForPrefix(pre) {
+		keySplit := strings.Split(string(itr.Item().Key()), ":")
+		if keySplit[len(keySplit)-1] == "message" {
+			itr.Item().Value(func(v []byte) error {
+				if string(v) == a.Message {
+					exist = true
+				}
+				return nil
+			})
+		}
+		itr.Next()
+	}
+	return exist
+}
+
+// func (db *AlertStore) keyExist(attr string) bool {
+// 	txn := db.NewTransaction(false)
+// 	itm, err := txn.Get(a.Key(attr))
+// 	if err != nil || itm == nil {
+// 		return false
+// 	}
+// 	return true
+// }

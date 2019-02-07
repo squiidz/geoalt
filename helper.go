@@ -36,3 +36,28 @@ func uint32FromBytes(bytes []byte) uint32 {
 	x, _ := strconv.Atoi(string(bytes))
 	return uint32(x)
 }
+
+func boolToInt(v bool) int {
+	if v {
+		return 1
+	}
+	return 0
+}
+
+func intToBool(v int) bool {
+	if v == 1 {
+		return true
+	}
+	return false
+}
+
+func boolToBytes(b bool) []byte {
+	v := boolToInt(b)
+	s := strconv.Itoa(v)
+	return []byte(s)
+}
+
+func boolFromBytes(b []byte) bool {
+	n, _ := strconv.Atoi(string(b))
+	return intToBool(n)
+}

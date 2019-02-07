@@ -73,13 +73,15 @@ func main() {
 			lng, _ := cmd.Flags().GetFloat64("lng")
 			msg, _ := cmd.Flags().GetString("msg")
 			token, _ := cmd.Flags().GetString("token")
+			eph, _ := cmd.Flags().GetBool("eph")
 			ctx := context.Background()
 			ctx = metadata.AppendToOutgoingContext(ctx, "token", token)
 			resp, err := gclt.CreateAlert(ctx, &pb.CreateAlertReq{
-				UserId:  uid,
-				Lat:     lat,
-				Lng:     lng,
-				Message: msg,
+				UserId:    uid,
+				Lat:       lat,
+				Lng:       lng,
+				Message:   msg,
+				Ephemeral: eph,
 			})
 			if err != nil {
 				log.Fatal(err)
@@ -94,6 +96,7 @@ func main() {
 	create.Flags().Float64("lng", 0, "-lng 3.44")
 	create.Flags().String("msg", "", "-msg message content")
 	create.Flags().String("token", "", "-token tokenString")
+	create.Flags().Bool("eph", false, "-eph true/false")
 
 	var rootCmd = &cobra.Command{Use: "geoclt"}
 	rootCmd.AddCommand(fetch, create)

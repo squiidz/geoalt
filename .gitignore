@@ -1,4 +1,5 @@
 cmd/geoaltclt/geoaltclt
 cmd/geoaltd/geoaltd
-cmd/geoaltd/badger/
+cmd/geoaltd/userdb/
+cmd/geoaltd/alertdb/
 geoalt/

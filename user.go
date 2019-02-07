@@ -1,12 +1,17 @@
 package geoalt
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/dgraph-io/badger"
 )
+
+type UserStore struct {
+	*badger.DB
+}
 
 type User struct {
 	ID        uint32
@@ -50,7 +55,7 @@ var fakeUsers = []User{
 	{ID: 5, Email: "jo@mail.com", Password: "qwerty", FirstName: "Jonathan", LastName: "Chaput", Address: "Quebec"},
 }
 
-func (db *DB) GetUserIDs(attr, value string) []int {
+func (db *UserStore) GetUserIDs(attr, value string) []int {
 	var userIDs []int
 
 	txn := db.NewTransaction(false)
@@ -80,7 +85,7 @@ func (db *DB) GetUserIDs(attr, value string) []int {
 	return userIDs
 }
 
-func (db *DB) GetUser(id uint32) (*User, error) {
+func (db *UserStore) GetUser(id uint32) (*User, error) {
 	var user User
 
 	txn := db.NewTransaction(false)
@@ -101,7 +106,7 @@ func (db *DB) GetUser(id uint32) (*User, error) {
 	return &user, nil
 }
 
-func (db *DB) GetUserByEmail(email string) (*User, error) {
+func (db *UserStore) GetUserByEmail(email string) (*User, error) {
 	var id uint32
 	txn := db.NewTransaction(false)
 	key := []byte(fmt.Sprintf("user:%s", email))
@@ -117,8 +122,12 @@ func (db *DB) GetUserByEmail(email string) (*User, error) {
 	return db.GetUser(id)
 }
 
-func (db *DB) InsertUser(u *User) error {
+func (db *UserStore) Insert(u *User) error {
+	if db.exist(u) {
+		return errors.New("User already exist")
+	}
 	txn := db.NewTransaction(true)
+	u.ID = db.Size() + 1
 	txn.Set(u.Key("email"), []byte(u.Email))
 	txn.Set(u.Key("password"), []byte(u.Password))
 	txn.Set(u.Key("first_name"), []byte(u.FirstName))
@@ -128,7 +137,7 @@ func (db *DB) InsertUser(u *User) error {
 	return txn.Commit()
 }
 
-func (db *DB) UserSize() uint32 {
+func (db *UserStore) Size() uint32 {
 	var count uint32
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
@@ -139,4 +148,13 @@ func (db *DB) UserSize() uint32 {
 		itr.Next()
 	}
 	return count
+}
+
+func (db *UserStore) exist(u *User) bool {
+	txn := db.NewTransaction(false)
+	itm, err := txn.Get(u.KeyEmail())
+	if err != nil || itm == nil {
+		return false
+	}
+	return true
 }

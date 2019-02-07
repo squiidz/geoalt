@@ -3,14 +3,26 @@ package geoalt
 import "github.com/dgraph-io/badger"
 
 type DB struct {
-	*badger.DB
+	UserStore  *UserStore
+	AlertStore *AlertStore
 }
 
-func NewDB(path string) (*DB, error) {
-	return openBadger(path)
+func NewDB(userPath, alertPath string) (*DB, error) {
+	userdb, err := openBadger(userPath)
+	if err != nil {
+		return nil, err
+	}
+	alertdb, err := openBadger(alertPath)
+	if err != nil {
+		return nil, err
+	}
+	return &DB{
+		UserStore:  &UserStore{userdb},
+		AlertStore: &AlertStore{alertdb},
+	}, nil
 }
 
-func openBadger(path string) (*DB, error) {
+func openBadger(path string) (*badger.DB, error) {
 	opts := badger.DefaultOptions
 	opts.Dir = path
 	opts.ValueDir = path
@@ -18,5 +30,5 @@ func openBadger(path string) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DB{db}, nil
+	return db, nil
 }

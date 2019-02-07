@@ -24,13 +24,13 @@ var fakeAlerts = []geoalt.Alert{
 
 func PopulateDB(db *geoalt.DB) error {
 	for _, u := range fakeUsers {
-		err := db.InsertUser(&u)
+		err := db.UserStore.Insert(&u)
 		if err != nil {
 			return err
 		}
 	}
 	for _, a := range fakeAlerts {
-		err := db.InsertAlert(&a)
+		err := db.AlertStore.Insert(&a)
 		if err != nil {
 			return err
 		}

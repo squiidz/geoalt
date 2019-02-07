@@ -33,6 +33,7 @@ message CreateAlertReq {
   double lat = 2;
   double lng = 3;
   string message = 4;
+  bool ephemeral = 5;
 }
 
 message CreateAlertResp {
