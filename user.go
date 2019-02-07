@@ -102,6 +102,9 @@ func (db *UserStore) GetUser(id uint32) (*User, error) {
 		})
 		itr.Next()
 	}
+	if user.Email == "" || user.Password == "" {
+		return nil, errors.New("User not found")
+	}
 	user.ID = uint32(id)
 	return &user, nil
 }

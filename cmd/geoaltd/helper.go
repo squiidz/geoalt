@@ -12,6 +12,7 @@ import (
 const Secret = "somenotsosecretsecret"
 
 type Claim struct {
+	ID    uint32 `json:"id"`
 	Email string `json:"email"`
 }
 
@@ -24,11 +25,13 @@ func (c *Claim) Valid() error {
 
 func hashPassword(p string) string {
 	h := sha256.New()
-	return string(h.Sum([]byte(p)))
+	h.Write([]byte(p))
+	return string(h.Sum(nil))
 }
 
 func genToken(u *geo.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claim{
+		ID:    u.ID,
 		Email: u.Email,
 	})
 	signToken, err := token.SignedString([]byte(Secret))

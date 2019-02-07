@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -13,14 +14,15 @@ import (
 	pb "github.com/squiidz/geoalt/geoaltsvc"
 )
 
-const cellLevel = 19
-
 type Server struct {
-	db *geo.DB
+	CellLvl int
+	db      *geo.DB
 }
 
-func New() *Server {
-	db, err := geo.NewDB("userdb", "alertdb")
+func New(dbpath string, cellLvl int) *Server {
+	udb := fmt.Sprintf("%s/userdb", dbpath)
+	adb := fmt.Sprintf("%s/alertdb", dbpath)
+	db, err := geo.NewDB(udb, adb)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,10 +81,10 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 		return nil, errors.New("Invalid Token please login")
 	}
 	cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
-	cellID := cell.ID().Parent(cellLevel)
+	cellID := cell.ID().Parent(s.CellLvl)
 
 	var alerts []*pb.Alert
-	user, err := s.db.UserStore.GetUserByEmail(c.Email)
+	user, err := s.db.UserStore.GetUser(c.ID)
 	if err != nil {
 		return nil, errors.New("Invalid credentials")
 	}
@@ -99,7 +101,7 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 			Timestamp: alert.Timestamp,
 		})
 	}
-	log.Printf("Get %d Alerts for user %d at lat %f lng %f", len(alerts), req.UserId, req.Lat, req.Lng)
+	log.Printf("Get %d Alerts for user %d at lat %f lng %f", len(alerts), user.ID, req.Lat, req.Lng)
 	return &pb.GetAlertResp{
 		Alerts: alerts,
 	}, nil
@@ -116,9 +118,9 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 	}
 
 	cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
-	cellID := cell.ID().Parent(cellLevel)
+	cellID := cell.ID().Parent(s.CellLvl)
 
-	u, err := s.db.UserStore.GetUserByEmail(c.Email)
+	u, err := s.db.UserStore.GetUser(c.ID)
 	if err != nil {
 		return nil, errors.New("Invalid credentials")
 	}

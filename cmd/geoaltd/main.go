@@ -15,6 +15,8 @@ import (
 var (
 	grpcPort = flag.Int("grpc", 9000, "GRPC port")
 	fake     = flag.Bool("fake", false, "load fake data")
+	cellLvl  = flag.Int("cellLvl", 19, "S2 Cell level for indexing")
+	dbpath   = flag.String("dbpath", ".", "database directory path")
 )
 
 func main() {
@@ -24,7 +26,7 @@ func main() {
 		log.Println(err)
 		os.Exit(2)
 	}
-	srvr := New()
+	srvr := New(*dbpath, *cellLvl)
 	if *fake {
 		PopulateDB(srvr.db)
 	}
