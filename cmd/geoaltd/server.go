@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/golang/geo/s2"
+	h3 "github.com/uber/h3-go"
 	"google.golang.org/grpc/metadata"
 
 	geo "github.com/squiidz/geoalt"
@@ -26,7 +26,7 @@ func New(dbpath string, cellLvl int) *Server {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &Server{db: db}
+	return &Server{db: db, CellLvl: cellLvl}
 }
 
 func (s Server) Register(context context.Context, req *pb.RegisterReq) (*pb.RegisterResp, error) {
@@ -80,8 +80,9 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 	if !ok {
 		return nil, errors.New("Invalid Token please login")
 	}
-	cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
-	cellID := cell.ID().Parent(s.CellLvl)
+	cellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, s.CellLvl)
+	// cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
+	// cellID := cell.ID().Parent(s.CellLvl)
 
 	var alerts []*pb.Alert
 	user, err := s.db.UserStore.GetUser(c.ID)
@@ -95,8 +96,11 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 			return nil, err
 		}
 		alerts = append(alerts, &pb.Alert{
-			Lat:       alert.Lat,
-			Lng:       alert.Lng,
+			Center: &pb.Coord{
+				Lat: alert.Lat,
+				Lng: alert.Lng,
+			},
+			Borders:   geoAltBorders(alert),
 			Message:   alert.Message,
 			Timestamp: alert.Timestamp,
 		})
@@ -116,9 +120,9 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 	if !ok {
 		return nil, errors.New("Invalid Token please login")
 	}
-
-	cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
-	cellID := cell.ID().Parent(s.CellLvl)
+	cellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, s.CellLvl)
+	// cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
+	// cellID := cell.ID().Parent(s.CellLvl)
 
 	u, err := s.db.UserStore.GetUser(c.ID)
 	if err != nil {

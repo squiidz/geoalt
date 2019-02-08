@@ -5,6 +5,8 @@ import (
 	"errors"
 	"log"
 
+	"github.com/squiidz/geoalt/geoaltsvc"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	geo "github.com/squiidz/geoalt"
 )
@@ -51,4 +53,16 @@ func tokenIsValid(t string) (*Claim, bool) {
 		return &claim, false
 	}
 	return &claim, true
+}
+
+func geoAltBorders(a *geo.Alert) []*geoaltsvc.Coord {
+	var coords []*geoaltsvc.Coord
+	borders := a.Borders()
+	for _, b := range borders {
+		coords = append(coords, &geoaltsvc.Coord{
+			Lat: b.Lat,
+			Lng: b.Lng - 360,
+		})
+	}
+	return coords
 }

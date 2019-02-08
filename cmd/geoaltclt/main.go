@@ -53,7 +53,8 @@ func main() {
 
 			for _, a := range resp.Alerts {
 				fmt.Println("----------------------------")
-				fmt.Printf("Message: %s\nLat: %f\nLng: %f\nTs: %s\n", a.Message, a.Lat, a.Lng, a.Timestamp)
+				fmt.Printf("Message: %s\nLat: %f\nLng: %f\nTs: %s\n", a.Message, a.Center.Lat, a.Center.Lng, a.Timestamp)
+				fmt.Println("Borders:", a.Borders)
 			}
 		},
 	}

@@ -51,8 +51,13 @@ message GetAlertResp {
 }
 
 message Alert {
-  double lat = 1;
-  double lng = 2;
+  Coord center = 1;
+  repeated Coord borders = 2;
   string message = 3;
 	string timestamp = 4;
+}
+
+message Coord {
+  double lat = 1;
+  double lng = 2;
 }

@@ -6,9 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/golang/geo/s2"
-
 	"github.com/dgraph-io/badger"
+	h3 "github.com/uber/h3-go"
 )
 
 type AlertStore struct {
@@ -17,13 +16,18 @@ type AlertStore struct {
 
 type Alert struct {
 	ID        uint32
-	CellID    s2.CellID
+	CellID    h3.H3Index
 	Lat       float64
 	Lng       float64
 	UserID    uint32
 	Message   string
 	Timestamp string
 	Ephemeral bool
+}
+
+type Coord struct {
+	Lat float64
+	Lng float64
 }
 
 func (a *Alert) Key(attr string) []byte {
@@ -46,6 +50,18 @@ func (a *Alert) SetAttr(attr string, value []byte) {
 	}
 }
 
+func (a *Alert) Borders() []*Coord {
+	var coords []*Coord
+	boundaries := h3.ToGeoBoundary(a.CellID)
+	for _, b := range boundaries {
+		coords = append(coords, &Coord{
+			Lat: b.Latitude,
+			Lng: b.Longitude,
+		})
+	}
+	return coords
+}
+
 func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert, error) {
 	var alert Alert
 
@@ -65,7 +81,7 @@ func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert,
 		itr.Next()
 	}
 	alert.ID = id
-	alert.CellID = s2.CellID(cellID)
+	alert.CellID = h3.H3Index(cellID)
 	if alert.Ephemeral {
 		db.Delete(&alert)
 	}
