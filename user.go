@@ -3,6 +3,7 @@ package geoalt
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -47,20 +48,12 @@ func (u *User) SetAttr(attr string, value string) {
 	}
 }
 
-var fakeUsers = []User{
-	{ID: 1, Email: "john@mail.com", Password: "a1b2c3d4", FirstName: "John", LastName: "Doe", Address: "New York"},
-	{ID: 2, Email: "ben@mail.com", Password: "1234abcd", FirstName: "Benjamin", LastName: "Button", Address: "Chicago"},
-	{ID: 3, Email: "mycroft@mail.com", Password: "abcdef", FirstName: "Mycroft", LastName: "Holmes", Address: "London"},
-	{ID: 4, Email: "fee@mail.com", Password: "123456", FirstName: "Fee", LastName: "Courtemanche", Address: "Quebec"},
-	{ID: 5, Email: "jo@mail.com", Password: "qwerty", FirstName: "Jonathan", LastName: "Chaput", Address: "Quebec"},
-}
-
 func (db *UserStore) GetUserIDs(attr, value string) []int {
 	var userIDs []int
-
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer itr.Close()
+
 	itr.Seek([]byte("user"))
 	for itr.Valid() {
 		key := string(itr.Item().Key())
@@ -87,11 +80,11 @@ func (db *UserStore) GetUserIDs(attr, value string) []int {
 
 func (db *UserStore) GetUser(id uint32) (*User, error) {
 	var user User
-
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer itr.Close()
 	pre := []byte(fmt.Sprintf("user:%d", id))
+
 	itr.Seek([]byte(pre))
 	for itr.ValidForPrefix(pre) {
 		keySplit := strings.Split(string(itr.Item().Key()), ":")
@@ -130,27 +123,44 @@ func (db *UserStore) Insert(u *User) error {
 		return errors.New("User already exist")
 	}
 	txn := db.NewTransaction(true)
-	u.ID = db.Size() + 1
+	u.ID = db.NextID()
 	txn.Set(u.Key("email"), []byte(u.Email))
 	txn.Set(u.Key("password"), []byte(u.Password))
 	txn.Set(u.Key("first_name"), []byte(u.FirstName))
 	txn.Set(u.Key("last_name"), []byte(u.LastName))
 	txn.Set(u.Key("address"), []byte(u.Address))
 	txn.Set(u.KeyEmail(), uint32ToBytes(u.ID))
+	log.Println("New User:", u)
 	return txn.Commit()
 }
 
-func (db *UserStore) Size() uint32 {
-	var count uint32
-	txn := db.NewTransaction(false)
-	itr := txn.NewIterator(badger.DefaultIteratorOptions)
-	defer itr.Close()
-	itr.Seek([]byte("user"))
-	for itr.ValidForPrefix([]byte("user")) {
-		count++
-		itr.Next()
+func (db *UserStore) NextID() uint32 {
+	txn := db.NewTransaction(true)
+	defer txn.Commit()
+	lenKey := []byte("user:len")
+	ulen := db.Size() + 1
+	if ulen == 0 {
+		txn.Set(lenKey, uint32ToBytes(0))
 	}
-	return count
+	err := txn.Set(lenKey, uint32ToBytes(ulen))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return ulen
+}
+
+func (db *UserStore) Size() uint32 {
+	var size uint32
+	txn := db.NewTransaction(false)
+	itm, err := txn.Get([]byte("user:len"))
+	if err != nil {
+		return 0
+	}
+	err = itm.Value(func(val []byte) error {
+		size = uint32FromBytes(val)
+		return nil
+	})
+	return size
 }
 
 func (db *UserStore) exist(u *User) bool {

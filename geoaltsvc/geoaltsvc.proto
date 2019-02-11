@@ -29,12 +29,11 @@ message LoginResp {
 }
 
 message CreateAlertReq {
-  uint32 user_id = 1;
-  double lat = 2;
-  double lng = 3;
-  string message = 4;
-  bool ephemeral = 5;
-  uint32 resolution = 6;
+  double lat = 1;
+  double lng = 2;
+  string message = 3;
+  bool ephemeral = 4;
+  uint32 resolution = 5;
 }
 
 message CreateAlertResp {
@@ -42,9 +41,8 @@ message CreateAlertResp {
 }
 
 message GetAlertReq {
-  uint32 user_id = 1;
-  double lat = 2;
-  double lng = 3;
+  double lat = 1;
+  double lng = 2;
 }
 
 message GetAlertResp {
@@ -54,7 +52,7 @@ message GetAlertResp {
 message Alert {
   Coord center = 1;
   repeated Coord borders = 2;
-  Size size = 3;
+  Cell cell = 3;
   string message = 4;
 	string timestamp = 5;
 }
@@ -64,7 +62,12 @@ message Coord {
   double lng = 3;
 }
 
-message Size {
-  uint64 cell = 1;
-  uint32 resolution = 2;
+message Cell {
+  // Smallest cell resolution (15)
+  uint64 base_cell = 1;
+  // Cell id used for indexing 
+  uint64 index_cell = 2;
+  // Cell id with the resolution
+  uint64 real_cell = 3;
+  uint32 resolution = 4;
 }

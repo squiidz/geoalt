@@ -44,16 +44,14 @@ func main() {
 		Long:  "fetch the user messages",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			uid, _ := cmd.Flags().GetUint32("userID")
 			lat, _ := cmd.Flags().GetFloat64("lat")
 			lng, _ := cmd.Flags().GetFloat64("lng")
 			token, _ := cmd.Flags().GetString("token")
 			ctx := context.Background()
 			ctx = metadata.AppendToOutgoingContext(ctx, "token", token)
 			resp, err := gclt.GetAlert(ctx, &pb.GetAlertReq{
-				UserId: uid,
-				Lat:    lat,
-				Lng:    lng,
+				Lat: lat,
+				Lng: lng,
 			})
 			if err != nil {
 				log.Fatal(err)
@@ -62,13 +60,13 @@ func main() {
 			for _, a := range resp.Alerts {
 				if InAlert(&Coord{lat, lng}, a) {
 					fmt.Println("----------------------------")
-					fmt.Printf("Message: %s\nLat: %f\nLng: %f\nMinCell: %d\nRes: %d\nTs: %s\n", a.Message, a.Center.Lat, a.Center.Lng, a.Size.Cell, a.Size.Resolution, a.Timestamp)
+					fmt.Printf("Message: %s\nLat: %f\nLng: %f\nBaseCell: %d\nIndexCell: %d\nRealCell: %d\nRes: %d\nTs: %s\n",
+						a.Message, a.Center.Lat, a.Center.Lng, a.Cell.BaseCell, a.Cell.IndexCell, a.Cell.RealCell, a.Cell.Resolution, a.Timestamp)
 					fmt.Println("Borders:", a.Borders)
 				}
 			}
 		},
 	}
-	fetch.Flags().Uint32("userID", 1, "-userID #id")
 	fetch.Flags().Float64("lat", 0, "-lat 2.33")
 	fetch.Flags().Float64("lng", 0, "-lng 3.44")
 	fetch.Flags().String("token", "", "-token tokenString")
@@ -79,7 +77,6 @@ func main() {
 		Long:  "create a new message",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			uid, _ := cmd.Flags().GetUint32("userID")
 			lat, _ := cmd.Flags().GetFloat64("lat")
 			lng, _ := cmd.Flags().GetFloat64("lng")
 			msg, _ := cmd.Flags().GetString("msg")
@@ -89,7 +86,6 @@ func main() {
 			ctx := context.Background()
 			ctx = metadata.AppendToOutgoingContext(ctx, "token", token)
 			resp, err := gclt.CreateAlert(ctx, &pb.CreateAlertReq{
-				UserId:     uid,
 				Lat:        lat,
 				Lng:        lng,
 				Message:    msg,
@@ -104,7 +100,7 @@ func main() {
 			}
 		},
 	}
-	create.Flags().Uint32("userID", 1, "-userID #id")
+
 	create.Flags().Float64("lat", 0, "-lat 2.33")
 	create.Flags().Float64("lng", 0, "-lng 3.44")
 	create.Flags().String("msg", "", "-msg message content")
@@ -118,7 +114,8 @@ func main() {
 }
 
 func InAlert(coord *Coord, alt *geoaltsvc.Alert) bool {
-	a := h3.ToParent(h3.H3Index(alt.Size.Cell), int(alt.Size.Resolution))
-	u := h3.FromGeo(h3.GeoCoord{Latitude: coord.Lat, Longitude: coord.Lng}, int(alt.Size.Resolution))
+	a := h3.H3Index(alt.Cell.RealCell)
+	u := h3.FromGeo(h3.GeoCoord{Latitude: coord.Lat, Longitude: coord.Lng}, int(alt.Cell.Resolution))
+	fmt.Printf("A: %d == U: %d\n", a, u)
 	return a == u
 }

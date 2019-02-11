@@ -74,11 +74,11 @@ func (a *Alert) Borders() []*Coord {
 
 func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert, error) {
 	var alert Alert
-
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer itr.Close()
 	pre := []byte(fmt.Sprintf("alert:%d:%d:%d", userID, cellID, id))
+
 	itr.Seek([]byte(pre))
 	for itr.ValidForPrefix(pre) {
 		keySplit := strings.Split(string(itr.Item().Key()), ":")

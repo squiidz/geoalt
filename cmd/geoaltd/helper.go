@@ -4,8 +4,10 @@ import (
 	"crypto/sha256"
 	"errors"
 	"log"
+	"time"
 
-	"github.com/squiidz/geoalt/geoaltsvc"
+	pb "github.com/squiidz/geoalt/geoaltsvc"
+	h3 "github.com/uber/h3-go"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	geo "github.com/squiidz/geoalt"
@@ -55,15 +57,50 @@ func tokenIsValid(t string) (*Claim, bool) {
 	return &claim, true
 }
 
-func geoAltBorders(a *geo.Alert) []*geoaltsvc.Coord {
-	var coords []*geoaltsvc.Coord
+func geoAltBorders(a *geo.Alert) []*pb.Coord {
+	var coords []*pb.Coord
 	borders := a.Borders()
 	for _, b := range borders {
-		coords = append(coords, &geoaltsvc.Coord{
+		coords = append(coords, &pb.Coord{
 			Lat: b.Lat,
 			// need to substract 360 from longitude due to a H3-go bug
 			Lng: b.Lng - 360,
 		})
 	}
 	return coords
+}
+
+func (s *Server) AlertToProto(alert *geo.Alert) *pb.Alert {
+	return &pb.Alert{
+		Center: &pb.Coord{
+			Lat: alert.Coord.Lat,
+			Lng: alert.Coord.Lng,
+		},
+		Borders: geoAltBorders(alert),
+		Cell: &pb.Cell{
+			BaseCell:   uint64(alert.MinCell),
+			IndexCell:  uint64(h3.ToParent(h3.H3Index(alert.MinCell), s.CellLvl)),
+			RealCell:   uint64(h3.ToParent(h3.H3Index(alert.MinCell), int(alert.CellRes))),
+			Resolution: alert.CellRes,
+		},
+		Message:   alert.Message,
+		Timestamp: alert.Timestamp,
+	}
+}
+
+func (s *Server) AlertFromProto(userID uint32, req *pb.CreateAlertReq) *geo.Alert {
+	cellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, s.CellLvl)
+	return &geo.Alert{
+		CellID: cellID,
+		Coord: geo.Coord{
+			Lat: req.Lat,
+			Lng: req.Lng,
+		},
+		CellRes:   req.Resolution,
+		MinCell:   h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, 15),
+		UserID:    userID,
+		Message:   req.Message,
+		Timestamp: time.Now().Format(time.RFC3339Nano),
+		Ephemeral: req.Ephemeral,
+	}
 }

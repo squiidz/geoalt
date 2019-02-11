@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
 
 	h3 "github.com/uber/h3-go"
 	"google.golang.org/grpc/metadata"
@@ -81,8 +80,6 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 		return nil, errors.New("Invalid Token please login")
 	}
 	cellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, s.CellLvl)
-	// cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
-	// cellID := cell.ID().Parent(s.CellLvl)
 
 	var alerts []*pb.Alert
 	user, err := s.db.UserStore.GetUser(c.ID)
@@ -95,19 +92,7 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 		if err != nil {
 			return nil, err
 		}
-		alerts = append(alerts, &pb.Alert{
-			Center: &pb.Coord{
-				Lat: alert.Coord.Lat,
-				Lng: alert.Coord.Lng,
-			},
-			Borders: geoAltBorders(alert),
-			Size: &pb.Size{
-				Cell:       uint64(alert.MinCell),
-				Resolution: alert.CellRes,
-			},
-			Message:   alert.Message,
-			Timestamp: alert.Timestamp,
-		})
+		alerts = append(alerts, s.AlertToProto(alert))
 	}
 	log.Printf("Get %d Alerts for user %d at lat %f lng %f", len(alerts), user.ID, req.Lat, req.Lng)
 	return &pb.GetAlertResp{
@@ -124,32 +109,12 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 	if !ok {
 		return nil, errors.New("Invalid Token please login")
 	}
-	cellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, s.CellLvl)
-	// cell := s2.CellFromLatLng(s2.LatLngFromDegrees(req.Lat, req.Lng))
-	// cellID := cell.ID().Parent(s.CellLvl)
 
-	u, err := s.db.UserStore.GetUser(c.ID)
-	if err != nil {
-		return nil, errors.New("Invalid credentials")
-	}
-	alert := &geo.Alert{
-		CellID: cellID,
-		Coord: geo.Coord{
-			Lat: req.Lat,
-			Lng: req.Lng,
-		},
-		CellRes:   req.Resolution,
-		MinCell:   h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, 15),
-		UserID:    u.ID,
-		Message:   req.Message,
-		Timestamp: time.Now().Format(time.RFC3339Nano),
-		Ephemeral: req.Ephemeral,
-	}
-
-	err = s.db.AlertStore.Insert(alert)
+	alert := s.AlertFromProto(c.ID, req)
+	err := s.db.AlertStore.Insert(alert)
 	if err != nil {
 		return &pb.CreateAlertResp{Ok: false}, err
 	}
-	log.Printf("Creating Alert for user %d at lat %f lng %f", req.UserId, req.Lat, req.Lng)
+	log.Printf("Creating Alert for user %d at lat %f lng %f", c.ID, req.Lat, req.Lng)
 	return &pb.CreateAlertResp{Ok: true}, nil
 }
