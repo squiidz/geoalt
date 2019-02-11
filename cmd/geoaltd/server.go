@@ -97,10 +97,14 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 		}
 		alerts = append(alerts, &pb.Alert{
 			Center: &pb.Coord{
-				Lat: alert.Lat,
-				Lng: alert.Lng,
+				Lat: alert.Coord.Lat,
+				Lng: alert.Coord.Lng,
 			},
-			Borders:   geoAltBorders(alert),
+			Borders: geoAltBorders(alert),
+			Size: &pb.Size{
+				Cell:       uint64(alert.MinCell),
+				Resolution: alert.CellRes,
+			},
 			Message:   alert.Message,
 			Timestamp: alert.Timestamp,
 		})
@@ -129,9 +133,13 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 		return nil, errors.New("Invalid credentials")
 	}
 	alert := &geo.Alert{
-		CellID:    cellID,
-		Lat:       req.Lat,
-		Lng:       req.Lng,
+		CellID: cellID,
+		Coord: geo.Coord{
+			Lat: req.Lat,
+			Lng: req.Lng,
+		},
+		CellRes:   req.Resolution,
+		MinCell:   h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, 15),
 		UserID:    u.ID,
 		Message:   req.Message,
 		Timestamp: time.Now().Format(time.RFC3339Nano),

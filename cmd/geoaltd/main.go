@@ -15,7 +15,7 @@ import (
 var (
 	grpcPort = flag.Int("grpc", 9000, "GRPC port")
 	fake     = flag.Bool("fake", false, "load fake data")
-	cellLvl  = flag.Int("cellLvl", 19, "S2 Cell level for indexing")
+	cellLvl  = flag.Int("cellLvl", 7, "H3 Cell level for indexing")
 	dbpath   = flag.String("dbpath", ".", "database directory path")
 )
 

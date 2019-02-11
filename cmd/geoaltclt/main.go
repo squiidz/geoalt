@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"log"
 
+	h3 "github.com/uber/h3-go"
+
 	"google.golang.org/grpc/metadata"
 
+	"github.com/squiidz/geoalt/geoaltsvc"
 	pb "github.com/squiidz/geoalt/geoaltsvc"
 
 	"github.com/spf13/cobra"
@@ -20,6 +23,11 @@ var (
 	lat      = flag.Float64("lat", 0, "latitude")
 	lng      = flag.Float64("lng", 0, "longitude")
 )
+
+type Coord struct {
+	Lat float64
+	Lng float64
+}
 
 func main() {
 	flag.Parse()
@@ -50,11 +58,13 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-
+			fmt.Printf("[!] %d alerts found in Sector [!]\n", len(resp.Alerts))
 			for _, a := range resp.Alerts {
-				fmt.Println("----------------------------")
-				fmt.Printf("Message: %s\nLat: %f\nLng: %f\nTs: %s\n", a.Message, a.Center.Lat, a.Center.Lng, a.Timestamp)
-				fmt.Println("Borders:", a.Borders)
+				if InAlert(&Coord{lat, lng}, a) {
+					fmt.Println("----------------------------")
+					fmt.Printf("Message: %s\nLat: %f\nLng: %f\nMinCell: %d\nRes: %d\nTs: %s\n", a.Message, a.Center.Lat, a.Center.Lng, a.Size.Cell, a.Size.Resolution, a.Timestamp)
+					fmt.Println("Borders:", a.Borders)
+				}
 			}
 		},
 	}
@@ -75,14 +85,16 @@ func main() {
 			msg, _ := cmd.Flags().GetString("msg")
 			token, _ := cmd.Flags().GetString("token")
 			eph, _ := cmd.Flags().GetBool("eph")
+			size, _ := cmd.Flags().GetUint32("size")
 			ctx := context.Background()
 			ctx = metadata.AppendToOutgoingContext(ctx, "token", token)
 			resp, err := gclt.CreateAlert(ctx, &pb.CreateAlertReq{
-				UserId:    uid,
-				Lat:       lat,
-				Lng:       lng,
-				Message:   msg,
-				Ephemeral: eph,
+				UserId:     uid,
+				Lat:        lat,
+				Lng:        lng,
+				Message:    msg,
+				Ephemeral:  eph,
+				Resolution: size,
 			})
 			if err != nil {
 				log.Fatal(err)
@@ -98,8 +110,15 @@ func main() {
 	create.Flags().String("msg", "", "-msg message content")
 	create.Flags().String("token", "", "-token tokenString")
 	create.Flags().Bool("eph", false, "-eph true/false")
+	create.Flags().Uint32("size", 7, "-size [7..15]")
 
 	var rootCmd = &cobra.Command{Use: "geoclt"}
 	rootCmd.AddCommand(fetch, create)
 	rootCmd.Execute()
+}
+
+func InAlert(coord *Coord, alt *geoaltsvc.Alert) bool {
+	a := h3.ToParent(h3.H3Index(alt.Size.Cell), int(alt.Size.Resolution))
+	u := h3.FromGeo(h3.GeoCoord{Latitude: coord.Lat, Longitude: coord.Lng}, int(alt.Size.Resolution))
+	return a == u
 }

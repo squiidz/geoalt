@@ -34,6 +34,7 @@ message CreateAlertReq {
   double lng = 3;
   string message = 4;
   bool ephemeral = 5;
+  uint32 resolution = 6;
 }
 
 message CreateAlertResp {
@@ -53,11 +54,17 @@ message GetAlertResp {
 message Alert {
   Coord center = 1;
   repeated Coord borders = 2;
-  string message = 3;
-	string timestamp = 4;
+  Size size = 3;
+  string message = 4;
+	string timestamp = 5;
 }
 
 message Coord {
-  double lat = 1;
-  double lng = 2;
+  double lat = 2;
+  double lng = 3;
+}
+
+message Size {
+  uint64 cell = 1;
+  uint32 resolution = 2;
 }

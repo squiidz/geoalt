@@ -61,6 +61,7 @@ func geoAltBorders(a *geo.Alert) []*geoaltsvc.Coord {
 	for _, b := range borders {
 		coords = append(coords, &geoaltsvc.Coord{
 			Lat: b.Lat,
+			// need to substract 360 from longitude due to a H3-go bug
 			Lng: b.Lng - 360,
 		})
 	}
