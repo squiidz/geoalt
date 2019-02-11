@@ -78,10 +78,10 @@ func (s *Server) AlertToProto(alert *geo.Alert) *pb.Alert {
 		},
 		Borders: geoAltBorders(alert),
 		Cell: &pb.Cell{
-			BaseCell:   uint64(alert.MinCell),
-			IndexCell:  uint64(h3.ToParent(h3.H3Index(alert.MinCell), s.CellLvl)),
-			RealCell:   uint64(h3.ToParent(h3.H3Index(alert.MinCell), int(alert.CellRes))),
-			Resolution: alert.CellRes,
+			BaseCell:   uint64(alert.Cell.Base),
+			IndexCell:  uint64(h3.ToParent(h3.H3Index(alert.Cell.Base), s.CellLvl)),
+			RealCell:   uint64(alert.Cell.Real),
+			Resolution: alert.Cell.Resolution,
 		},
 		Message:   alert.Message,
 		Timestamp: alert.Timestamp,
@@ -91,13 +91,16 @@ func (s *Server) AlertToProto(alert *geo.Alert) *pb.Alert {
 func (s *Server) AlertFromProto(userID uint32, req *pb.CreateAlertReq) *geo.Alert {
 	cellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, s.CellLvl)
 	return &geo.Alert{
-		CellID: cellID,
+		Cell: geo.Cell{
+			Base:       h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, 15),
+			Index:      cellID,
+			Real:       h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, int(req.Resolution)),
+			Resolution: req.Resolution,
+		},
 		Coord: geo.Coord{
 			Lat: req.Lat,
 			Lng: req.Lng,
 		},
-		CellRes:   req.Resolution,
-		MinCell:   h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, 15),
 		UserID:    userID,
 		Message:   req.Message,
 		Timestamp: time.Now().Format(time.RFC3339Nano),

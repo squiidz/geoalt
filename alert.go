@@ -16,14 +16,22 @@ type AlertStore struct {
 
 type Alert struct {
 	ID        uint32
-	CellID    h3.H3Index // Resolution of indexing
-	MinCell   h3.H3Index // Smallest resultion
-	CellRes   uint32     // Resolution for geo fence
-	Coord     Coord
 	UserID    uint32
+	Cell      Cell
+	Coord     Coord
 	Message   string
 	Timestamp string
 	Ephemeral bool
+}
+
+type Cell struct {
+	// Smallest cell resolution (15)
+	Base h3.H3Index
+	// Cell id used for indexing
+	Index h3.H3Index
+	// Cell id with the resolution
+	Real       h3.H3Index
+	Resolution uint32
 }
 
 type Coord struct {
@@ -37,7 +45,7 @@ func (c *Coord) CellID(res int) h3.H3Index {
 
 func (a *Alert) Key(attr string) []byte {
 	// alert:$alert_id:$user_id:$attribute_name = $value
-	return []byte(fmt.Sprintf("alert:%d:%d:%d:%s", a.UserID, a.CellID, a.ID, attr))
+	return []byte(fmt.Sprintf("alert:%d:%d:%d:%s", a.UserID, a.Cell.Index, a.ID, attr))
 }
 
 func (a *Alert) SetAttr(attr string, value []byte) {
@@ -52,17 +60,20 @@ func (a *Alert) SetAttr(attr string, value []byte) {
 		a.Coord.Lng = float64fromBytes(value)
 	case "ephemeral":
 		a.Ephemeral = boolFromBytes(value)
-	case "min_cell":
-		a.MinCell = h3.H3Index(uint64FromBytes(value))
-	case "cell_res":
-		a.CellRes = uint32FromBytes(value)
+	case "base_cell":
+		a.Cell.Base = h3.H3Index(uint64FromBytes(value))
+	case "index_cell":
+		a.Cell.Index = h3.H3Index(uint64FromBytes(value))
+	case "real_cell":
+		a.Cell.Real = h3.H3Index(uint64FromBytes(value))
+	case "resolution":
+		a.Cell.Resolution = uint32FromBytes(value)
 	}
 }
 
 func (a *Alert) Borders() []*Coord {
 	var coords []*Coord
-	rcell := h3.ToParent(a.MinCell, int(a.CellRes))
-	boundaries := h3.ToGeoBoundary(rcell)
+	boundaries := h3.ToGeoBoundary(a.Cell.Real)
 	for _, b := range boundaries {
 		coords = append(coords, &Coord{
 			Lat: b.Latitude,
@@ -91,7 +102,7 @@ func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert,
 		itr.Next()
 	}
 	alert.ID = id
-	alert.CellID = h3.H3Index(cellID)
+	alert.Cell.Index = h3.H3Index(cellID)
 	if alert.Ephemeral {
 		db.Delete(&alert)
 	}
@@ -126,8 +137,8 @@ func (db *AlertStore) Insert(a *Alert) error {
 	}
 	var err error
 	txn := db.NewTransaction(true)
-	a.ID = db.Size(a.UserID, uint64(a.CellID)) + 1
-	a.MinCell = h3.FromGeo(h3.GeoCoord{Latitude: a.Coord.Lat, Longitude: a.Coord.Lng}, 15)
+	a.ID = db.Size(a.UserID, uint64(a.Cell.Index)) + 1
+	a.Cell.Base = h3.FromGeo(h3.GeoCoord{Latitude: a.Coord.Lat, Longitude: a.Coord.Lng}, 15)
 	if err = txn.Set(a.Key("message"), []byte(a.Message)); err != nil {
 		return err
 	}
@@ -143,10 +154,16 @@ func (db *AlertStore) Insert(a *Alert) error {
 	if err = txn.Set(a.Key("ephemeral"), boolToBytes(a.Ephemeral)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("min_cell"), uint64ToBytes(uint64(a.MinCell))); err != nil {
+	if err = txn.Set(a.Key("base_cell"), uint64ToBytes(uint64(a.Cell.Base))); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("cell_res"), uint32ToBytes(a.CellRes)); err != nil {
+	if err = txn.Set(a.Key("index_cell"), uint64ToBytes(uint64(a.Cell.Index))); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("real_cell"), uint64ToBytes(uint64(a.Cell.Real))); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("resolution"), uint32ToBytes(a.Cell.Resolution)); err != nil {
 		return err
 	}
 	return txn.Commit()
@@ -170,10 +187,16 @@ func (db *AlertStore) Delete(a *Alert) error {
 	if err = txn.Delete(a.Key("ephemeral")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("min_cell")); err != nil {
+	if err = txn.Delete(a.Key("base_cell")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("cell_res")); err != nil {
+	if err = txn.Delete(a.Key("index_cell")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("real_cell")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("resolution")); err != nil {
 		return err
 	}
 	return txn.Commit()
@@ -190,7 +213,7 @@ func (db *AlertStore) Size(userID uint32, cellID uint64) uint32 {
 		count++
 		itr.Next()
 	}
-	return count
+	return count / 7
 }
 
 func (db *AlertStore) Exist(a *Alert) bool {
@@ -198,7 +221,7 @@ func (db *AlertStore) Exist(a *Alert) bool {
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer itr.Close()
-	pre := basePrefix(a.UserID, uint64(a.CellID))
+	pre := basePrefix(a.UserID, uint64(a.Cell.Index))
 	itr.Seek(pre)
 	for itr.ValidForPrefix(pre) {
 		keySplit := strings.Split(string(itr.Item().Key()), ":")
