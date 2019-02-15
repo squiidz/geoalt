@@ -103,7 +103,8 @@ func (s *Server) AlertFromProto(userID uint32, req *pb.CreateAlertReq) *geo.Aler
 		},
 		UserID:    userID,
 		Message:   req.Message,
-		Timestamp: time.Now().Format(time.RFC3339Nano),
+		Timestamp: time.Now().Unix(),
+		Delay:     req.Delay,
 		Ephemeral: req.Ephemeral,
 	}
 }

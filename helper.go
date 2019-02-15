@@ -47,6 +47,16 @@ func uint64FromBytes(bytes []byte) uint64 {
 	return uint64(x)
 }
 
+func int64ToBytes(u int64) []byte {
+	str := strconv.Itoa(int(u))
+	return []byte(str)
+}
+
+func int64FromBytes(bytes []byte) int64 {
+	x, _ := strconv.Atoi(string(bytes))
+	return int64(x)
+}
+
 func boolToInt(v bool) int {
 	if v {
 		return 1

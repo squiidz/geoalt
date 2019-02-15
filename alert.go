@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dgraph-io/badger"
 	h3 "github.com/uber/h3-go"
@@ -15,12 +16,17 @@ type AlertStore struct {
 }
 
 type Alert struct {
-	ID        uint32
-	UserID    uint32
-	Cell      Cell
-	Coord     Coord
-	Message   string
-	Timestamp string
+	ID      uint32
+	UserID  uint32
+	Cell    Cell
+	Coord   Coord
+	Message string
+	// Created at
+	Timestamp int64
+	// Last read
+	ReadAt int64
+	// Delay until avaible again
+	Delay     int64
 	Ephemeral bool
 }
 
@@ -53,7 +59,11 @@ func (a *Alert) SetAttr(attr string, value []byte) {
 	case "message":
 		a.Message = string(value)
 	case "timestamp":
-		a.Timestamp = string(value)
+		a.Timestamp = int64FromBytes(value)
+	case "read_at":
+		a.ReadAt = int64FromBytes(value)
+	case "delay":
+		a.Delay = int64FromBytes(value)
 	case "latitude":
 		a.Coord.Lat = float64fromBytes(value)
 	case "longitude":
@@ -83,6 +93,10 @@ func (a *Alert) Borders() []*Coord {
 	return coords
 }
 
+func (a *Alert) ValidDelay() bool {
+	return (a.ReadAt + a.Delay) < time.Now().Unix()
+}
+
 func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert, error) {
 	var alert Alert
 	txn := db.NewTransaction(false)
@@ -98,11 +112,16 @@ func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert,
 			alert.SetAttr(attr, val)
 			return nil
 		})
-		alert.UserID = userID
 		itr.Next()
 	}
+	if !alert.ValidDelay() {
+		return nil, errors.New("Delay invalid")
+	}
 	alert.ID = id
+	alert.UserID = userID
 	alert.Cell.Index = h3.H3Index(cellID)
+
+	db.PutAttr(&alert, "read_at", int64ToBytes(time.Now().Unix()))
 	if alert.Ephemeral {
 		db.Delete(&alert)
 	}
@@ -137,12 +156,20 @@ func (db *AlertStore) Insert(a *Alert) error {
 	}
 	var err error
 	txn := db.NewTransaction(true)
+
 	a.ID = db.Size(a.UserID, uint64(a.Cell.Index)) + 1
 	a.Cell.Base = h3.FromGeo(h3.GeoCoord{Latitude: a.Coord.Lat, Longitude: a.Coord.Lng}, 15)
+
 	if err = txn.Set(a.Key("message"), []byte(a.Message)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("timestamp"), []byte(a.Timestamp)); err != nil {
+	if err = txn.Set(a.Key("timestamp"), int64ToBytes(a.Timestamp)); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("read_at"), int64ToBytes(a.Timestamp)); err != nil {
+		return err
+	}
+	if err = txn.Set(a.Key("delay"), int64ToBytes(a.Delay)); err != nil {
 		return err
 	}
 	if err = txn.Set(a.Key("latitude"), float64ToBytes(a.Coord.Lat)); err != nil {
@@ -169,6 +196,12 @@ func (db *AlertStore) Insert(a *Alert) error {
 	return txn.Commit()
 }
 
+func (db *AlertStore) PutAttr(alert *Alert, attr string, value []byte) error {
+	txn := db.NewTransaction(true)
+	defer txn.Commit()
+	return txn.Set(alert.Key(attr), value)
+}
+
 func (db *AlertStore) Delete(a *Alert) error {
 	var err error
 	txn := db.NewTransaction(true)
@@ -176,6 +209,12 @@ func (db *AlertStore) Delete(a *Alert) error {
 		return err
 	}
 	if err = txn.Delete(a.Key("timestamp")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("read_at")); err != nil {
+		return err
+	}
+	if err = txn.Delete(a.Key("delay")); err != nil {
 		return err
 	}
 	if err = txn.Delete(a.Key("latitude")); err != nil {

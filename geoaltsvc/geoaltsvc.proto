@@ -34,6 +34,7 @@ message CreateAlertReq {
   string message = 3;
   bool ephemeral = 4;
   uint32 resolution = 5;
+  int64 delay = 6;
 }
 
 message CreateAlertResp {
@@ -54,7 +55,9 @@ message Alert {
   repeated Coord borders = 2;
   Cell cell = 3;
   string message = 4;
-	string timestamp = 5;
+  int64 timestamp = 5;
+  int64 read_at = 6;
+  int64 delay = 7;
 }
 
 message Coord {

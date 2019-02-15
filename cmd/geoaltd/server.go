@@ -90,7 +90,8 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 	for _, aid := range alertIDs {
 		alert, err := s.db.AlertStore.GetAlert(uint64(cellID), user.ID, uint32(aid))
 		if err != nil {
-			return nil, err
+			log.Println(err)
+			continue
 		}
 		alerts = append(alerts, s.AlertToProto(alert))
 	}
