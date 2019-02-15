@@ -101,7 +101,7 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 	}, nil
 }
 
-func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*pb.CreateAlertResp, error) {
+func (s Server) AddAlert(context context.Context, req *pb.AddAlertReq) (*pb.AddAlertResp, error) {
 	md, ok := metadata.FromIncomingContext(context)
 	if !ok || len(md.Get("token")) <= 0 {
 		return nil, errors.New("No Metadata")
@@ -114,8 +114,8 @@ func (s Server) CreateAlert(context context.Context, req *pb.CreateAlertReq) (*p
 	alert := s.AlertFromProto(c.ID, req)
 	err := s.db.AlertStore.Insert(alert)
 	if err != nil {
-		return &pb.CreateAlertResp{Ok: false}, err
+		return &pb.AddAlertResp{Ok: false}, err
 	}
 	log.Printf("Creating Alert for user %d at lat %f lng %f", c.ID, req.Lat, req.Lng)
-	return &pb.CreateAlertResp{Ok: true}, nil
+	return &pb.AddAlertResp{Ok: true}, nil
 }

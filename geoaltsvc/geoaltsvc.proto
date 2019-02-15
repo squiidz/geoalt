@@ -3,7 +3,7 @@ syntax = "proto3";
 service GeoAlt {
   rpc Login(LoginReq) returns (LoginResp);
   rpc Register(RegisterReq) returns (RegisterResp);
-  rpc CreateAlert(CreateAlertReq) returns (CreateAlertResp);
+  rpc AddAlert(AddAlertReq) returns (AddAlertResp);
   rpc GetAlert(GetAlertReq) returns (GetAlertResp);
 }
 
@@ -28,7 +28,7 @@ message LoginResp {
   string token = 1;
 }
 
-message CreateAlertReq {
+message AddAlertReq {
   double lat = 1;
   double lng = 2;
   string message = 3;
@@ -37,7 +37,7 @@ message CreateAlertReq {
   int64 delay = 6;
 }
 
-message CreateAlertResp {
+message AddAlertResp {
   bool ok = 1;
 }
 

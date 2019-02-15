@@ -49,12 +49,16 @@ func (c *Coord) CellID(res int) h3.H3Index {
 	return h3.FromGeo(h3.GeoCoord{Latitude: c.Lat, Longitude: c.Lng}, res)
 }
 
-func (a *Alert) Key(attr string) []byte {
+func basePrefix(userID uint32, cellID uint64) []byte {
+	return []byte(fmt.Sprintf("alert:%d:%d", userID, cellID))
+}
+
+func (a *Alert) key(attr string) []byte {
 	// alert:$alert_id:$user_id:$attribute_name = $value
 	return []byte(fmt.Sprintf("alert:%d:%d:%d:%s", a.UserID, a.Cell.Index, a.ID, attr))
 }
 
-func (a *Alert) SetAttr(attr string, value []byte) {
+func (a *Alert) setAttr(attr string, value []byte) {
 	switch attr {
 	case "message":
 		a.Message = string(value)
@@ -93,7 +97,7 @@ func (a *Alert) Borders() []*Coord {
 	return coords
 }
 
-func (a *Alert) ValidDelay() bool {
+func (a *Alert) validDelay() bool {
 	return (a.ReadAt + a.Delay) < time.Now().Unix()
 }
 
@@ -109,12 +113,12 @@ func (db *AlertStore) GetAlert(cellID uint64, userID uint32, id uint32) (*Alert,
 		keySplit := strings.Split(string(itr.Item().Key()), ":")
 		attr := keySplit[len(keySplit)-1]
 		itr.Item().Value(func(val []byte) error {
-			alert.SetAttr(attr, val)
+			alert.setAttr(attr, val)
 			return nil
 		})
 		itr.Next()
 	}
-	if !alert.ValidDelay() {
+	if !alert.validDelay() {
 		return nil, errors.New("Delay invalid")
 	}
 	alert.ID = id
@@ -151,46 +155,46 @@ func (db *AlertStore) GetUserAlertIDs(cellID uint64, userID uint32) []int {
 }
 
 func (db *AlertStore) Insert(a *Alert) error {
-	if db.Exist(a) {
+	if db.exist(a) {
 		return errors.New("Alert already exist")
 	}
 	var err error
 	txn := db.NewTransaction(true)
 
-	a.ID = db.Size(a.UserID, uint64(a.Cell.Index)) + 1
+	a.ID = db.size(a.UserID, uint64(a.Cell.Index)) + 1
 	a.Cell.Base = h3.FromGeo(h3.GeoCoord{Latitude: a.Coord.Lat, Longitude: a.Coord.Lng}, 15)
 
-	if err = txn.Set(a.Key("message"), []byte(a.Message)); err != nil {
+	if err = txn.Set(a.key("message"), []byte(a.Message)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("timestamp"), int64ToBytes(a.Timestamp)); err != nil {
+	if err = txn.Set(a.key("timestamp"), int64ToBytes(a.Timestamp)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("read_at"), int64ToBytes(a.Timestamp)); err != nil {
+	if err = txn.Set(a.key("read_at"), int64ToBytes(a.Timestamp)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("delay"), int64ToBytes(a.Delay)); err != nil {
+	if err = txn.Set(a.key("delay"), int64ToBytes(a.Delay)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("latitude"), float64ToBytes(a.Coord.Lat)); err != nil {
+	if err = txn.Set(a.key("latitude"), float64ToBytes(a.Coord.Lat)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("longitude"), float64ToBytes(a.Coord.Lng)); err != nil {
+	if err = txn.Set(a.key("longitude"), float64ToBytes(a.Coord.Lng)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("ephemeral"), boolToBytes(a.Ephemeral)); err != nil {
+	if err = txn.Set(a.key("ephemeral"), boolToBytes(a.Ephemeral)); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("base_cell"), uint64ToBytes(uint64(a.Cell.Base))); err != nil {
+	if err = txn.Set(a.key("base_cell"), uint64ToBytes(uint64(a.Cell.Base))); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("index_cell"), uint64ToBytes(uint64(a.Cell.Index))); err != nil {
+	if err = txn.Set(a.key("index_cell"), uint64ToBytes(uint64(a.Cell.Index))); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("real_cell"), uint64ToBytes(uint64(a.Cell.Real))); err != nil {
+	if err = txn.Set(a.key("real_cell"), uint64ToBytes(uint64(a.Cell.Real))); err != nil {
 		return err
 	}
-	if err = txn.Set(a.Key("resolution"), uint32ToBytes(a.Cell.Resolution)); err != nil {
+	if err = txn.Set(a.key("resolution"), uint32ToBytes(a.Cell.Resolution)); err != nil {
 		return err
 	}
 	return txn.Commit()
@@ -199,49 +203,49 @@ func (db *AlertStore) Insert(a *Alert) error {
 func (db *AlertStore) PutAttr(alert *Alert, attr string, value []byte) error {
 	txn := db.NewTransaction(true)
 	defer txn.Commit()
-	return txn.Set(alert.Key(attr), value)
+	return txn.Set(alert.key(attr), value)
 }
 
 func (db *AlertStore) Delete(a *Alert) error {
 	var err error
 	txn := db.NewTransaction(true)
-	if err = txn.Delete(a.Key("message")); err != nil {
+	if err = txn.Delete(a.key("message")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("timestamp")); err != nil {
+	if err = txn.Delete(a.key("timestamp")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("read_at")); err != nil {
+	if err = txn.Delete(a.key("read_at")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("delay")); err != nil {
+	if err = txn.Delete(a.key("delay")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("latitude")); err != nil {
+	if err = txn.Delete(a.key("latitude")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("longitude")); err != nil {
+	if err = txn.Delete(a.key("longitude")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("ephemeral")); err != nil {
+	if err = txn.Delete(a.key("ephemeral")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("base_cell")); err != nil {
+	if err = txn.Delete(a.key("base_cell")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("index_cell")); err != nil {
+	if err = txn.Delete(a.key("index_cell")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("real_cell")); err != nil {
+	if err = txn.Delete(a.key("real_cell")); err != nil {
 		return err
 	}
-	if err = txn.Delete(a.Key("resolution")); err != nil {
+	if err = txn.Delete(a.key("resolution")); err != nil {
 		return err
 	}
 	return txn.Commit()
 }
 
-func (db *AlertStore) Size(userID uint32, cellID uint64) uint32 {
+func (db *AlertStore) size(userID uint32, cellID uint64) uint32 {
 	var count uint32
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
@@ -255,7 +259,7 @@ func (db *AlertStore) Size(userID uint32, cellID uint64) uint32 {
 	return count / 7
 }
 
-func (db *AlertStore) Exist(a *Alert) bool {
+func (db *AlertStore) exist(a *Alert) bool {
 	exist := false
 	txn := db.NewTransaction(false)
 	itr := txn.NewIterator(badger.DefaultIteratorOptions)
@@ -275,10 +279,6 @@ func (db *AlertStore) Exist(a *Alert) bool {
 		itr.Next()
 	}
 	return exist
-}
-
-func basePrefix(userID uint32, cellID uint64) []byte {
-	return []byte(fmt.Sprintf("alert:%d:%d", userID, cellID))
 }
 
 // func (db *AlertStore) keyExist(attr string) bool {

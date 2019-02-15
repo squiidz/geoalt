@@ -116,7 +116,7 @@ func (clt *Client) createCommand() *cobra.Command {
 			clt.login(username, password)
 			ctx := context.Background()
 			ctx = metadata.AppendToOutgoingContext(ctx, "token", clt.token)
-			resp, err := clt.CreateAlert(ctx, &pb.CreateAlertReq{
+			resp, err := clt.AddAlert(ctx, &pb.AddAlertReq{
 				Lat:        lat,
 				Lng:        lng,
 				Message:    msg,

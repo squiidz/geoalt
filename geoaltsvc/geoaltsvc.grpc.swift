@@ -37,10 +37,10 @@ fileprivate final class GeoAltRegisterCallBase: ClientCallUnaryBase<RegisterReq,
   override class var method: String { return "/GeoAlt/Register" }
 }
 
-internal protocol GeoAltCreateAlertCall: ClientCallUnary {}
+internal protocol GeoAltAddAlertCall: ClientCallUnary {}
 
-fileprivate final class GeoAltCreateAlertCallBase: ClientCallUnaryBase<CreateAlertReq, CreateAlertResp>, GeoAltCreateAlertCall {
-  override class var method: String { return "/GeoAlt/CreateAlert" }
+fileprivate final class GeoAltAddAlertCallBase: ClientCallUnaryBase<AddAlertReq, AddAlertResp>, GeoAltAddAlertCall {
+  override class var method: String { return "/GeoAlt/AddAlert" }
 }
 
 internal protocol GeoAltGetAlertCall: ClientCallUnary {}
@@ -63,9 +63,9 @@ internal protocol GeoAltService: ServiceClient {
   func register(_ request: RegisterReq, completion: @escaping (RegisterResp?, CallResult) -> Void) throws -> GeoAltRegisterCall
 
   /// Synchronous. Unary.
-  func createAlert(_ request: CreateAlertReq) throws -> CreateAlertResp
+  func addAlert(_ request: AddAlertReq) throws -> AddAlertResp
   /// Asynchronous. Unary.
-  func createAlert(_ request: CreateAlertReq, completion: @escaping (CreateAlertResp?, CallResult) -> Void) throws -> GeoAltCreateAlertCall
+  func addAlert(_ request: AddAlertReq, completion: @escaping (AddAlertResp?, CallResult) -> Void) throws -> GeoAltAddAlertCall
 
   /// Synchronous. Unary.
   func getAlert(_ request: GetAlertReq) throws -> GetAlertResp
@@ -98,13 +98,13 @@ internal final class GeoAltServiceClient: ServiceClientBase, GeoAltService {
   }
 
   /// Synchronous. Unary.
-  internal func createAlert(_ request: CreateAlertReq) throws -> CreateAlertResp {
-    return try GeoAltCreateAlertCallBase(channel)
+  internal func addAlert(_ request: AddAlertReq) throws -> AddAlertResp {
+    return try GeoAltAddAlertCallBase(channel)
       .run(request: request, metadata: metadata)
   }
   /// Asynchronous. Unary.
-  internal func createAlert(_ request: CreateAlertReq, completion: @escaping (CreateAlertResp?, CallResult) -> Void) throws -> GeoAltCreateAlertCall {
-    return try GeoAltCreateAlertCallBase(channel)
+  internal func addAlert(_ request: AddAlertReq, completion: @escaping (AddAlertResp?, CallResult) -> Void) throws -> GeoAltAddAlertCall {
+    return try GeoAltAddAlertCallBase(channel)
       .start(request: request, metadata: metadata, completion: completion)
   }
 
