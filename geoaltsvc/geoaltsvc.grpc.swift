@@ -37,6 +37,37 @@ fileprivate final class GeoAltRegisterCallBase: ClientCallUnaryBase<RegisterReq,
   override class var method: String { return "/GeoAlt/Register" }
 }
 
+internal protocol GeoAltGeoFeedCall: ClientCallBidirectionalStreaming {
+  /// Do not call this directly, call `receive()` in the protocol extension below instead.
+  func _receive(timeout: DispatchTime) throws -> GetAlertResp?
+  /// Call this to wait for a result. Nonblocking.
+  func receive(completion: @escaping (ResultOrRPCError<GetAlertResp?>) -> Void) throws
+
+  /// Send a message to the stream. Nonblocking.
+  func send(_ message: GetAlertReq, completion: @escaping (Error?) -> Void) throws
+  /// Do not call this directly, call `send()` in the protocol extension below instead.
+  func _send(_ message: GetAlertReq, timeout: DispatchTime) throws
+
+  /// Call this to close the sending connection. Blocking.
+  func closeSend() throws
+  /// Call this to close the sending connection. Nonblocking.
+  func closeSend(completion: (() -> Void)?) throws
+}
+
+internal extension GeoAltGeoFeedCall {
+  /// Call this to wait for a result. Blocking.
+  func receive(timeout: DispatchTime = .distantFuture) throws -> GetAlertResp? { return try self._receive(timeout: timeout) }
+}
+
+internal extension GeoAltGeoFeedCall {
+  /// Send a message to the stream and wait for the send operation to finish. Blocking.
+  func send(_ message: GetAlertReq, timeout: DispatchTime = .distantFuture) throws { try self._send(message, timeout: timeout) }
+}
+
+fileprivate final class GeoAltGeoFeedCallBase: ClientCallBidirectionalStreamingBase<GetAlertReq, GetAlertResp>, GeoAltGeoFeedCall {
+  override class var method: String { return "/GeoAlt/GeoFeed" }
+}
+
 internal protocol GeoAltAddAlertCall: ClientCallUnary {}
 
 fileprivate final class GeoAltAddAlertCallBase: ClientCallUnaryBase<AddAlertReq, AddAlertResp>, GeoAltAddAlertCall {
@@ -61,6 +92,11 @@ internal protocol GeoAltService: ServiceClient {
   func register(_ request: RegisterReq) throws -> RegisterResp
   /// Asynchronous. Unary.
   func register(_ request: RegisterReq, completion: @escaping (RegisterResp?, CallResult) -> Void) throws -> GeoAltRegisterCall
+
+  /// Asynchronous. Bidirectional-streaming.
+  /// Use methods on the returned object to stream messages,
+  /// to wait for replies, and to close the connection.
+  func geoFeed(completion: ((CallResult) -> Void)?) throws -> GeoAltGeoFeedCall
 
   /// Synchronous. Unary.
   func addAlert(_ request: AddAlertReq) throws -> AddAlertResp
@@ -95,6 +131,14 @@ internal final class GeoAltServiceClient: ServiceClientBase, GeoAltService {
   internal func register(_ request: RegisterReq, completion: @escaping (RegisterResp?, CallResult) -> Void) throws -> GeoAltRegisterCall {
     return try GeoAltRegisterCallBase(channel)
       .start(request: request, metadata: metadata, completion: completion)
+  }
+
+  /// Asynchronous. Bidirectional-streaming.
+  /// Use methods on the returned object to stream messages,
+  /// to wait for replies, and to close the connection.
+  internal func geoFeed(completion: ((CallResult) -> Void)?) throws -> GeoAltGeoFeedCall {
+    return try GeoAltGeoFeedCallBase(channel)
+      .start(metadata: metadata, completion: completion)
   }
 
   /// Synchronous. Unary.

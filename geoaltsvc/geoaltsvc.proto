@@ -3,6 +3,7 @@ syntax = "proto3";
 service GeoAlt {
   rpc Login(LoginReq) returns (LoginResp);
   rpc Register(RegisterReq) returns (RegisterResp);
+  rpc GeoFeed(stream GetAlertReq) returns (stream GetAlertResp);
   rpc AddAlert(AddAlertReq) returns (AddAlertResp);
   rpc GetAlert(GetAlertReq) returns (GetAlertResp);
 }

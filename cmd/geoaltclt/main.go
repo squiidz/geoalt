@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 
 	h3 "github.com/uber/h3-go"
@@ -40,7 +41,7 @@ func main() {
 	clt := Client{GeoAltClient: pb.NewGeoAltClient(conn)}
 
 	var rootCmd = &cobra.Command{Use: "geoclt"}
-	rootCmd.AddCommand(clt.registerCommand(), clt.fetchCommand(), clt.createCommand())
+	rootCmd.AddCommand(clt.registerCommand(), clt.fetchCommand(), clt.addCommand(), clt.liveFeedCommand())
 	rootCmd.Execute()
 }
 
@@ -97,11 +98,11 @@ func (clt *Client) registerCommand() *cobra.Command {
 	return register
 }
 
-func (clt *Client) createCommand() *cobra.Command {
-	create := &cobra.Command{
-		Use:   "create a new message",
-		Short: "create a new message",
-		Long:  "create a new message",
+func (clt *Client) addCommand() *cobra.Command {
+	add := &cobra.Command{
+		Use:   "add a new message",
+		Short: "add a new message",
+		Long:  "add a new message",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			lat, _ := cmd.Flags().GetFloat64("lat")
@@ -128,20 +129,20 @@ func (clt *Client) createCommand() *cobra.Command {
 				log.Fatal(err)
 			}
 			if resp.Ok {
-				fmt.Println("Message created successfully")
+				fmt.Println("Message addd successfully")
 			}
 		},
 	}
-	create.Flags().Float64("lat", 0, "-lat 2.33")
-	create.Flags().Float64("lng", 0, "-lng 3.44")
-	create.Flags().String("msg", "", "-msg message content")
-	create.Flags().Bool("eph", false, "-eph true/false")
-	create.Flags().Uint32("size", 7, "-size [7..15]")
-	create.Flags().Int64("delay", 30, "delay in second")
-	create.Flags().String("username", "jo@mail.com", "user email")
-	create.Flags().String("password", "password123", "user password")
+	add.Flags().Float64("lat", 0, "-lat 2.33")
+	add.Flags().Float64("lng", 0, "-lng 3.44")
+	add.Flags().String("msg", "", "-msg message content")
+	add.Flags().Bool("eph", false, "-eph true/false")
+	add.Flags().Uint32("size", 7, "-size [7..15]")
+	add.Flags().Int64("delay", 30, "delay in second")
+	add.Flags().String("username", "jo@mail.com", "user email")
+	add.Flags().String("password", "password123", "user password")
 
-	return create
+	return add
 }
 
 func (clt *Client) fetchCommand() *cobra.Command {
@@ -182,4 +183,39 @@ func (clt *Client) fetchCommand() *cobra.Command {
 	fetch.Flags().String("password", "password123", "user password")
 
 	return fetch
+}
+
+func (clt *Client) liveFeedCommand() *cobra.Command {
+	live := &cobra.Command{
+		Use:   "live message",
+		Short: "live message",
+		Long:  "live message",
+		Args:  cobra.MinimumNArgs(0),
+		Run: func(cmd *cobra.Command, args []string) {
+			username, _ := cmd.Flags().GetString("username")
+			password, _ := cmd.Flags().GetString("password")
+
+			clt.login(username, password)
+			ctx := context.Background()
+			ctx = metadata.AppendToOutgoingContext(ctx, "token", clt.token)
+
+			feed, err := clt.GeoFeed(ctx)
+			if err != nil {
+				panic(err)
+			}
+			for {
+				in, err := feed.Recv()
+				if err == io.EOF {
+					continue
+				}
+				if err != nil {
+					panic(err)
+				}
+				fmt.Println(in.GetAlerts())
+			}
+		},
+	}
+	live.Flags().String("username", "jo@mail.com", "user email")
+	live.Flags().String("password", "password123", "user password")
+	return live
 }

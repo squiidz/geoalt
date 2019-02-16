@@ -130,7 +130,6 @@ func (db *UserStore) Insert(u *User) error {
 	txn.Set(u.Key("last_name"), []byte(u.LastName))
 	txn.Set(u.Key("address"), []byte(u.Address))
 	txn.Set(u.KeyEmail(), uint32ToBytes(u.ID))
-	log.Println("New User:", u)
 	return txn.Commit()
 }
 

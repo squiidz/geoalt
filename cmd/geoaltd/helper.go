@@ -37,6 +37,8 @@ func (s *Server) AlertToProto(alert *geo.Alert) *pb.Alert {
 		},
 		Message:   alert.Message,
 		Timestamp: alert.Timestamp,
+		Delay:     alert.Delay,
+		ReadAt:    alert.ReadAt,
 	}
 }
 

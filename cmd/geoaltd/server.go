@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"time"
 
 	h3 "github.com/uber/h3-go"
 	"google.golang.org/grpc/metadata"
@@ -68,6 +70,29 @@ func (s Server) Login(context context.Context, req *pb.LoginReq) (*pb.LoginResp,
 	return &pb.LoginResp{
 		Token: token,
 	}, nil
+}
+
+func (s Server) GeoFeed(feed pb.GeoAlt_GeoFeedServer) error {
+	for {
+		in, err := feed.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		for {
+			time.Sleep(time.Second * 5)
+			out, err := s.GetAlert(feed.Context(), in)
+			if err != nil {
+				return err
+			}
+			err = feed.Send(out)
+			if err != nil {
+				return err
+			}
+		}
+	}
 }
 
 func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetAlertResp, error) {
