@@ -4,7 +4,7 @@ import (
 	"time"
 
 	pb "github.com/squiidz/geoalt/geoaltsvc"
-	h3 "github.com/uber/h3-go"
+	h3 "github.com/squiidz/h3-go"
 
 	geo "github.com/squiidz/geoalt"
 )
@@ -15,8 +15,7 @@ func geoAltBorders(a *geo.Alert) []*pb.Coord {
 	for _, b := range borders {
 		coords = append(coords, &pb.Coord{
 			Lat: b.Lat,
-			// need to substract 360 from longitude due to a H3-go bug
-			Lng: b.Lng - 360,
+			Lng: b.Lng,
 		})
 	}
 	return coords
@@ -31,7 +30,7 @@ func (s *Server) AlertToProto(alert *geo.Alert) *pb.Alert {
 		Borders: geoAltBorders(alert),
 		Cell: &pb.Cell{
 			BaseCell:   uint64(alert.Cell.Base),
-			IndexCell:  uint64(h3.ToParent(h3.H3Index(alert.Cell.Base), s.CellLvl)),
+			IndexCell:  uint64(alert.Cell.Index),
 			RealCell:   uint64(alert.Cell.Real),
 			Resolution: alert.Cell.Resolution,
 		},
