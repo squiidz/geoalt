@@ -8,7 +8,7 @@ import (
 	"log"
 	"time"
 
-	h3 "github.com/uber/h3-go"
+	h3 "github.com/squiidz/h3-go"
 	"google.golang.org/grpc/metadata"
 
 	geo "github.com/squiidz/geoalt"

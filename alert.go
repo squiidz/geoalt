@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/dgraph-io/badger"
-	h3 "github.com/uber/h3-go"
+	h3 "github.com/squiidz/h3-go"
 )
 
 type AlertStore struct {

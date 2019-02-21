@@ -51,3 +51,4 @@ func (g *GeoClt) GetAlerts(lat, lng float64) error {
 	g.Alerts = resp.Alerts
 	return nil
 }
+
