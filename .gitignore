@@ -2,4 +2,13 @@ cmd/geoaltclt/geoaltclt
 cmd/geoaltd/geoaltd
 cmd/geoaltd/userdb/
 cmd/geoaltd/alertdb/
+geoaltsvc/*.swift
 geoalt/
+www/node_modules/
+.DS_Store
+.vscode/
+geoaltsvc/GeoaltsvcServiceClientPb.ts
+geoaltsvc/geoaltsvc_grpc_web_pb.d.ts
+geoaltsvc/geoaltsvc_grpc_web_pb.js
+geoaltsvc/geoaltsvc_pb.d.ts
+geoaltsvc/geoaltsvc_pb.js

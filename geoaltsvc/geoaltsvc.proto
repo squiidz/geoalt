@@ -3,9 +3,10 @@ syntax = "proto3";
 service GeoAlt {
   rpc Login(LoginReq) returns (LoginResp);
   rpc Register(RegisterReq) returns (RegisterResp);
-  rpc GeoFeed(stream GetAlertReq) returns (stream GetAlertResp);
+  rpc GeoFeed(stream GetAlertsReq) returns (stream GetAlertsResp);
   rpc AddAlert(AddAlertReq) returns (AddAlertResp);
-  rpc GetAlert(GetAlertReq) returns (GetAlertResp);
+  rpc GetAlerts(GetAlertsReq) returns (GetAlertsResp);
+  rpc GetActiveAlerts(GetAlertsReq) returns (GetAlertsResp);
 }
 
 message RegisterReq {
@@ -42,12 +43,12 @@ message AddAlertResp {
   bool ok = 1;
 }
 
-message GetAlertReq {
+message GetAlertsReq {
   double lat = 1;
   double lng = 2;
 }
 
-message GetAlertResp {
+message GetAlertsResp {
   repeated Alert alerts = 1;
 }
 

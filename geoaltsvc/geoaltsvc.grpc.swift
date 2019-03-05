@@ -39,14 +39,14 @@ fileprivate final class GeoAltRegisterCallBase: ClientCallUnaryBase<RegisterReq,
 
 internal protocol GeoAltGeoFeedCall: ClientCallBidirectionalStreaming {
   /// Do not call this directly, call `receive()` in the protocol extension below instead.
-  func _receive(timeout: DispatchTime) throws -> GetAlertResp?
+  func _receive(timeout: DispatchTime) throws -> GetAlertsResp?
   /// Call this to wait for a result. Nonblocking.
-  func receive(completion: @escaping (ResultOrRPCError<GetAlertResp?>) -> Void) throws
+  func receive(completion: @escaping (ResultOrRPCError<GetAlertsResp?>) -> Void) throws
 
   /// Send a message to the stream. Nonblocking.
-  func send(_ message: GetAlertReq, completion: @escaping (Error?) -> Void) throws
+  func send(_ message: GetAlertsReq, completion: @escaping (Error?) -> Void) throws
   /// Do not call this directly, call `send()` in the protocol extension below instead.
-  func _send(_ message: GetAlertReq, timeout: DispatchTime) throws
+  func _send(_ message: GetAlertsReq, timeout: DispatchTime) throws
 
   /// Call this to close the sending connection. Blocking.
   func closeSend() throws
@@ -56,15 +56,15 @@ internal protocol GeoAltGeoFeedCall: ClientCallBidirectionalStreaming {
 
 internal extension GeoAltGeoFeedCall {
   /// Call this to wait for a result. Blocking.
-  func receive(timeout: DispatchTime = .distantFuture) throws -> GetAlertResp? { return try self._receive(timeout: timeout) }
+  func receive(timeout: DispatchTime = .distantFuture) throws -> GetAlertsResp? { return try self._receive(timeout: timeout) }
 }
 
 internal extension GeoAltGeoFeedCall {
   /// Send a message to the stream and wait for the send operation to finish. Blocking.
-  func send(_ message: GetAlertReq, timeout: DispatchTime = .distantFuture) throws { try self._send(message, timeout: timeout) }
+  func send(_ message: GetAlertsReq, timeout: DispatchTime = .distantFuture) throws { try self._send(message, timeout: timeout) }
 }
 
-fileprivate final class GeoAltGeoFeedCallBase: ClientCallBidirectionalStreamingBase<GetAlertReq, GetAlertResp>, GeoAltGeoFeedCall {
+fileprivate final class GeoAltGeoFeedCallBase: ClientCallBidirectionalStreamingBase<GetAlertsReq, GetAlertsResp>, GeoAltGeoFeedCall {
   override class var method: String { return "/GeoAlt/GeoFeed" }
 }
 
@@ -74,10 +74,16 @@ fileprivate final class GeoAltAddAlertCallBase: ClientCallUnaryBase<AddAlertReq,
   override class var method: String { return "/GeoAlt/AddAlert" }
 }
 
-internal protocol GeoAltGetAlertCall: ClientCallUnary {}
+internal protocol GeoAltGetAlertsCall: ClientCallUnary {}
 
-fileprivate final class GeoAltGetAlertCallBase: ClientCallUnaryBase<GetAlertReq, GetAlertResp>, GeoAltGetAlertCall {
-  override class var method: String { return "/GeoAlt/GetAlert" }
+fileprivate final class GeoAltGetAlertsCallBase: ClientCallUnaryBase<GetAlertsReq, GetAlertsResp>, GeoAltGetAlertsCall {
+  override class var method: String { return "/GeoAlt/GetAlerts" }
+}
+
+internal protocol GeoAltGetActiveAlertsCall: ClientCallUnary {}
+
+fileprivate final class GeoAltGetActiveAlertsCallBase: ClientCallUnaryBase<GetAlertsReq, GetAlertsResp>, GeoAltGetActiveAlertsCall {
+  override class var method: String { return "/GeoAlt/GetActiveAlerts" }
 }
 
 
@@ -104,9 +110,14 @@ internal protocol GeoAltService: ServiceClient {
   func addAlert(_ request: AddAlertReq, completion: @escaping (AddAlertResp?, CallResult) -> Void) throws -> GeoAltAddAlertCall
 
   /// Synchronous. Unary.
-  func getAlert(_ request: GetAlertReq) throws -> GetAlertResp
+  func getAlerts(_ request: GetAlertsReq) throws -> GetAlertsResp
   /// Asynchronous. Unary.
-  func getAlert(_ request: GetAlertReq, completion: @escaping (GetAlertResp?, CallResult) -> Void) throws -> GeoAltGetAlertCall
+  func getAlerts(_ request: GetAlertsReq, completion: @escaping (GetAlertsResp?, CallResult) -> Void) throws -> GeoAltGetAlertsCall
+
+  /// Synchronous. Unary.
+  func getActiveAlerts(_ request: GetAlertsReq) throws -> GetAlertsResp
+  /// Asynchronous. Unary.
+  func getActiveAlerts(_ request: GetAlertsReq, completion: @escaping (GetAlertsResp?, CallResult) -> Void) throws -> GeoAltGetActiveAlertsCall
 
 }
 
@@ -153,13 +164,24 @@ internal final class GeoAltServiceClient: ServiceClientBase, GeoAltService {
   }
 
   /// Synchronous. Unary.
-  internal func getAlert(_ request: GetAlertReq) throws -> GetAlertResp {
-    return try GeoAltGetAlertCallBase(channel)
+  internal func getAlerts(_ request: GetAlertsReq) throws -> GetAlertsResp {
+    return try GeoAltGetAlertsCallBase(channel)
       .run(request: request, metadata: metadata)
   }
   /// Asynchronous. Unary.
-  internal func getAlert(_ request: GetAlertReq, completion: @escaping (GetAlertResp?, CallResult) -> Void) throws -> GeoAltGetAlertCall {
-    return try GeoAltGetAlertCallBase(channel)
+  internal func getAlerts(_ request: GetAlertsReq, completion: @escaping (GetAlertsResp?, CallResult) -> Void) throws -> GeoAltGetAlertsCall {
+    return try GeoAltGetAlertsCallBase(channel)
+      .start(request: request, metadata: metadata, completion: completion)
+  }
+
+  /// Synchronous. Unary.
+  internal func getActiveAlerts(_ request: GetAlertsReq) throws -> GetAlertsResp {
+    return try GeoAltGetActiveAlertsCallBase(channel)
+      .run(request: request, metadata: metadata)
+  }
+  /// Asynchronous. Unary.
+  internal func getActiveAlerts(_ request: GetAlertsReq, completion: @escaping (GetAlertsResp?, CallResult) -> Void) throws -> GeoAltGetActiveAlertsCall {
+    return try GeoAltGetActiveAlertsCallBase(channel)
       .start(request: request, metadata: metadata, completion: completion)
   }
 

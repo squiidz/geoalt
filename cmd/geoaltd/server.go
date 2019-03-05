@@ -9,7 +9,6 @@ import (
 	"time"
 
 	h3 "github.com/squiidz/h3-go"
-	"google.golang.org/grpc/metadata"
 
 	geo "github.com/squiidz/geoalt"
 	pb "github.com/squiidz/geoalt/geoaltsvc"
@@ -83,7 +82,7 @@ func (s Server) GeoFeed(feed pb.GeoAlt_GeoFeedServer) error {
 		}
 		for {
 			time.Sleep(time.Second * 5)
-			out, err := s.GetAlert(feed.Context(), in)
+			out, err := s.GetAlerts(feed.Context(), in)
 			if err != nil {
 				return err
 			}
@@ -95,14 +94,10 @@ func (s Server) GeoFeed(feed pb.GeoAlt_GeoFeedServer) error {
 	}
 }
 
-func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetAlertResp, error) {
-	md, ok := metadata.FromIncomingContext(context)
-	if !ok || len(md.Get("token")) <= 0 {
-		return nil, errors.New("No Metadata")
-	}
-	c, ok := tokenIsValid(md.Get("token")[0])
-	if !ok {
-		return nil, errors.New("Invalid Token please login")
+func (s Server) GetAlerts(context context.Context, req *pb.GetAlertsReq) (*pb.GetAlertsResp, error) {
+	c, err := checkToken(context)
+	if err != nil {
+		return nil, err
 	}
 	cellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, s.CellLvl)
 
@@ -120,24 +115,36 @@ func (s Server) GetAlert(context context.Context, req *pb.GetAlertReq) (*pb.GetA
 		}
 		alerts = append(alerts, s.AlertToProto(alert))
 	}
+
 	log.Printf("Get %d Alerts for user %d at lat %f lng %f", len(alerts), user.ID, req.Lat, req.Lng)
-	return &pb.GetAlertResp{
+	return &pb.GetAlertsResp{
 		Alerts: alerts,
 	}, nil
 }
 
-func (s Server) AddAlert(context context.Context, req *pb.AddAlertReq) (*pb.AddAlertResp, error) {
-	md, ok := metadata.FromIncomingContext(context)
-	if !ok || len(md.Get("token")) <= 0 {
-		return nil, errors.New("No Metadata")
+func (s Server) GetActiveAlerts(ctx context.Context, req *pb.GetAlertsReq) (*pb.GetAlertsResp, error) {
+	var active []*pb.Alert
+	alertResp, err := s.GetAlerts(ctx, req)
+	if err != nil {
+		return nil, err
 	}
-	c, ok := tokenIsValid(md.Get("token")[0])
-	if !ok {
-		return nil, errors.New("Invalid Token please login")
+	uCellID := h3.FromGeo(h3.GeoCoord{Latitude: req.Lat, Longitude: req.Lng}, 15)
+	for _, a := range alertResp.Alerts {
+		if h3.H3Index(a.Cell.RealCell) == h3.ToParent(uCellID, int(a.Cell.Resolution)) {
+			active = append(active, a)
+		}
+	}
+	return &pb.GetAlertsResp{Alerts: active}, nil
+}
+
+func (s Server) AddAlert(context context.Context, req *pb.AddAlertReq) (*pb.AddAlertResp, error) {
+	c, err := checkToken(context)
+	if err != nil {
+		return nil, err
 	}
 
 	alert := s.AlertFromProto(c.ID, req)
-	err := s.db.AlertStore.Insert(alert)
+	err = s.db.AlertStore.Insert(alert)
 	if err != nil {
 		return &pb.AddAlertResp{Ok: false}, err
 	}

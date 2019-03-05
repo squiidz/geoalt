@@ -111,7 +111,7 @@ struct AddAlertResp {
   init() {}
 }
 
-struct GetAlertReq {
+struct GetAlertsReq {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -125,7 +125,7 @@ struct GetAlertReq {
   init() {}
 }
 
-struct GetAlertResp {
+struct GetAlertsResp {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -463,8 +463,8 @@ extension AddAlertResp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
   }
 }
 
-extension GetAlertReq: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = "GetAlertReq"
+extension GetAlertsReq: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GetAlertsReq"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "lat"),
     2: .same(proto: "lng"),
@@ -490,7 +490,7 @@ extension GetAlertReq: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: GetAlertReq) -> Bool {
+  func _protobuf_generated_isEqualTo(other: GetAlertsReq) -> Bool {
     if self.lat != other.lat {return false}
     if self.lng != other.lng {return false}
     if unknownFields != other.unknownFields {return false}
@@ -498,8 +498,8 @@ extension GetAlertReq: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementati
   }
 }
 
-extension GetAlertResp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = "GetAlertResp"
+extension GetAlertsResp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "GetAlertsResp"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "alerts"),
   ]
@@ -520,7 +520,7 @@ extension GetAlertResp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: GetAlertResp) -> Bool {
+  func _protobuf_generated_isEqualTo(other: GetAlertsResp) -> Bool {
     if self.alerts != other.alerts {return false}
     if unknownFields != other.unknownFields {return false}
     return true

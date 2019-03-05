@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"crypto/sha256"
 	"errors"
 	"log"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	geo "github.com/squiidz/geoalt"
+	"google.golang.org/grpc/metadata"
 )
 
 const Secret = "somenotsosecretsecret"
@@ -51,4 +53,16 @@ func tokenIsValid(t string) (*Claim, bool) {
 		return &claim, false
 	}
 	return &claim, true
+}
+
+func checkToken(ctx context.Context) (*Claim, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok || len(md.Get("token")) <= 0 {
+		return nil, errors.New("No Metadata")
+	}
+	c, ok := tokenIsValid(md.Get("token")[0])
+	if !ok {
+		return nil, errors.New("Invalid Token please login")
+	}
+	return c, nil
 }

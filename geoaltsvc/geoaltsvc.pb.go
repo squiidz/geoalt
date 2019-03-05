@@ -38,7 +38,7 @@ func (m *RegisterReq) Reset()         { *m = RegisterReq{} }
 func (m *RegisterReq) String() string { return proto.CompactTextString(m) }
 func (*RegisterReq) ProtoMessage()    {}
 func (*RegisterReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{0}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{0}
 }
 func (m *RegisterReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegisterReq.Unmarshal(m, b)
@@ -104,7 +104,7 @@ func (m *RegisterResp) Reset()         { *m = RegisterResp{} }
 func (m *RegisterResp) String() string { return proto.CompactTextString(m) }
 func (*RegisterResp) ProtoMessage()    {}
 func (*RegisterResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{1}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{1}
 }
 func (m *RegisterResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegisterResp.Unmarshal(m, b)
@@ -143,7 +143,7 @@ func (m *LoginReq) Reset()         { *m = LoginReq{} }
 func (m *LoginReq) String() string { return proto.CompactTextString(m) }
 func (*LoginReq) ProtoMessage()    {}
 func (*LoginReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{2}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{2}
 }
 func (m *LoginReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LoginReq.Unmarshal(m, b)
@@ -188,7 +188,7 @@ func (m *LoginResp) Reset()         { *m = LoginResp{} }
 func (m *LoginResp) String() string { return proto.CompactTextString(m) }
 func (*LoginResp) ProtoMessage()    {}
 func (*LoginResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{3}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{3}
 }
 func (m *LoginResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LoginResp.Unmarshal(m, b)
@@ -231,7 +231,7 @@ func (m *AddAlertReq) Reset()         { *m = AddAlertReq{} }
 func (m *AddAlertReq) String() string { return proto.CompactTextString(m) }
 func (*AddAlertReq) ProtoMessage()    {}
 func (*AddAlertReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{4}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{4}
 }
 func (m *AddAlertReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AddAlertReq.Unmarshal(m, b)
@@ -304,7 +304,7 @@ func (m *AddAlertResp) Reset()         { *m = AddAlertResp{} }
 func (m *AddAlertResp) String() string { return proto.CompactTextString(m) }
 func (*AddAlertResp) ProtoMessage()    {}
 func (*AddAlertResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{5}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{5}
 }
 func (m *AddAlertResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AddAlertResp.Unmarshal(m, b)
@@ -331,7 +331,7 @@ func (m *AddAlertResp) GetOk() bool {
 	return false
 }
 
-type GetAlertReq struct {
+type GetAlertsReq struct {
 	Lat                  float64  `protobuf:"fixed64,1,opt,name=lat,proto3" json:"lat,omitempty"`
 	Lng                  float64  `protobuf:"fixed64,2,opt,name=lng,proto3" json:"lng,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -339,76 +339,76 @@ type GetAlertReq struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetAlertReq) Reset()         { *m = GetAlertReq{} }
-func (m *GetAlertReq) String() string { return proto.CompactTextString(m) }
-func (*GetAlertReq) ProtoMessage()    {}
-func (*GetAlertReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{6}
+func (m *GetAlertsReq) Reset()         { *m = GetAlertsReq{} }
+func (m *GetAlertsReq) String() string { return proto.CompactTextString(m) }
+func (*GetAlertsReq) ProtoMessage()    {}
+func (*GetAlertsReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{6}
 }
-func (m *GetAlertReq) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetAlertReq.Unmarshal(m, b)
+func (m *GetAlertsReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetAlertsReq.Unmarshal(m, b)
 }
-func (m *GetAlertReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetAlertReq.Marshal(b, m, deterministic)
+func (m *GetAlertsReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetAlertsReq.Marshal(b, m, deterministic)
 }
-func (dst *GetAlertReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAlertReq.Merge(dst, src)
+func (dst *GetAlertsReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAlertsReq.Merge(dst, src)
 }
-func (m *GetAlertReq) XXX_Size() int {
-	return xxx_messageInfo_GetAlertReq.Size(m)
+func (m *GetAlertsReq) XXX_Size() int {
+	return xxx_messageInfo_GetAlertsReq.Size(m)
 }
-func (m *GetAlertReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAlertReq.DiscardUnknown(m)
+func (m *GetAlertsReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAlertsReq.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAlertReq proto.InternalMessageInfo
+var xxx_messageInfo_GetAlertsReq proto.InternalMessageInfo
 
-func (m *GetAlertReq) GetLat() float64 {
+func (m *GetAlertsReq) GetLat() float64 {
 	if m != nil {
 		return m.Lat
 	}
 	return 0
 }
 
-func (m *GetAlertReq) GetLng() float64 {
+func (m *GetAlertsReq) GetLng() float64 {
 	if m != nil {
 		return m.Lng
 	}
 	return 0
 }
 
-type GetAlertResp struct {
+type GetAlertsResp struct {
 	Alerts               []*Alert `protobuf:"bytes,1,rep,name=alerts,proto3" json:"alerts,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetAlertResp) Reset()         { *m = GetAlertResp{} }
-func (m *GetAlertResp) String() string { return proto.CompactTextString(m) }
-func (*GetAlertResp) ProtoMessage()    {}
-func (*GetAlertResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{7}
+func (m *GetAlertsResp) Reset()         { *m = GetAlertsResp{} }
+func (m *GetAlertsResp) String() string { return proto.CompactTextString(m) }
+func (*GetAlertsResp) ProtoMessage()    {}
+func (*GetAlertsResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{7}
 }
-func (m *GetAlertResp) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetAlertResp.Unmarshal(m, b)
+func (m *GetAlertsResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetAlertsResp.Unmarshal(m, b)
 }
-func (m *GetAlertResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetAlertResp.Marshal(b, m, deterministic)
+func (m *GetAlertsResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetAlertsResp.Marshal(b, m, deterministic)
 }
-func (dst *GetAlertResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAlertResp.Merge(dst, src)
+func (dst *GetAlertsResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAlertsResp.Merge(dst, src)
 }
-func (m *GetAlertResp) XXX_Size() int {
-	return xxx_messageInfo_GetAlertResp.Size(m)
+func (m *GetAlertsResp) XXX_Size() int {
+	return xxx_messageInfo_GetAlertsResp.Size(m)
 }
-func (m *GetAlertResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAlertResp.DiscardUnknown(m)
+func (m *GetAlertsResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAlertsResp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAlertResp proto.InternalMessageInfo
+var xxx_messageInfo_GetAlertsResp proto.InternalMessageInfo
 
-func (m *GetAlertResp) GetAlerts() []*Alert {
+func (m *GetAlertsResp) GetAlerts() []*Alert {
 	if m != nil {
 		return m.Alerts
 	}
@@ -432,7 +432,7 @@ func (m *Alert) Reset()         { *m = Alert{} }
 func (m *Alert) String() string { return proto.CompactTextString(m) }
 func (*Alert) ProtoMessage()    {}
 func (*Alert) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{8}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{8}
 }
 func (m *Alert) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Alert.Unmarshal(m, b)
@@ -513,7 +513,7 @@ func (m *Coord) Reset()         { *m = Coord{} }
 func (m *Coord) String() string { return proto.CompactTextString(m) }
 func (*Coord) ProtoMessage()    {}
 func (*Coord) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{9}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{9}
 }
 func (m *Coord) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Coord.Unmarshal(m, b)
@@ -564,7 +564,7 @@ func (m *Cell) Reset()         { *m = Cell{} }
 func (m *Cell) String() string { return proto.CompactTextString(m) }
 func (*Cell) ProtoMessage()    {}
 func (*Cell) Descriptor() ([]byte, []int) {
-	return fileDescriptor_geoaltsvc_8ecc444933883d98, []int{10}
+	return fileDescriptor_geoaltsvc_5e512dd99f0f8398, []int{10}
 }
 func (m *Cell) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Cell.Unmarshal(m, b)
@@ -619,8 +619,8 @@ func init() {
 	proto.RegisterType((*LoginResp)(nil), "LoginResp")
 	proto.RegisterType((*AddAlertReq)(nil), "AddAlertReq")
 	proto.RegisterType((*AddAlertResp)(nil), "AddAlertResp")
-	proto.RegisterType((*GetAlertReq)(nil), "GetAlertReq")
-	proto.RegisterType((*GetAlertResp)(nil), "GetAlertResp")
+	proto.RegisterType((*GetAlertsReq)(nil), "GetAlertsReq")
+	proto.RegisterType((*GetAlertsResp)(nil), "GetAlertsResp")
 	proto.RegisterType((*Alert)(nil), "Alert")
 	proto.RegisterType((*Coord)(nil), "Coord")
 	proto.RegisterType((*Cell)(nil), "Cell")
@@ -642,7 +642,8 @@ type GeoAltClient interface {
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 	GeoFeed(ctx context.Context, opts ...grpc.CallOption) (GeoAlt_GeoFeedClient, error)
 	AddAlert(ctx context.Context, in *AddAlertReq, opts ...grpc.CallOption) (*AddAlertResp, error)
-	GetAlert(ctx context.Context, in *GetAlertReq, opts ...grpc.CallOption) (*GetAlertResp, error)
+	GetAlerts(ctx context.Context, in *GetAlertsReq, opts ...grpc.CallOption) (*GetAlertsResp, error)
+	GetActiveAlerts(ctx context.Context, in *GetAlertsReq, opts ...grpc.CallOption) (*GetAlertsResp, error)
 }
 
 type geoAltClient struct {
@@ -681,8 +682,8 @@ func (c *geoAltClient) GeoFeed(ctx context.Context, opts ...grpc.CallOption) (Ge
 }
 
 type GeoAlt_GeoFeedClient interface {
-	Send(*GetAlertReq) error
-	Recv() (*GetAlertResp, error)
+	Send(*GetAlertsReq) error
+	Recv() (*GetAlertsResp, error)
 	grpc.ClientStream
 }
 
@@ -690,12 +691,12 @@ type geoAltGeoFeedClient struct {
 	grpc.ClientStream
 }
 
-func (x *geoAltGeoFeedClient) Send(m *GetAlertReq) error {
+func (x *geoAltGeoFeedClient) Send(m *GetAlertsReq) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *geoAltGeoFeedClient) Recv() (*GetAlertResp, error) {
-	m := new(GetAlertResp)
+func (x *geoAltGeoFeedClient) Recv() (*GetAlertsResp, error) {
+	m := new(GetAlertsResp)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -711,9 +712,18 @@ func (c *geoAltClient) AddAlert(ctx context.Context, in *AddAlertReq, opts ...gr
 	return out, nil
 }
 
-func (c *geoAltClient) GetAlert(ctx context.Context, in *GetAlertReq, opts ...grpc.CallOption) (*GetAlertResp, error) {
-	out := new(GetAlertResp)
-	err := c.cc.Invoke(ctx, "/GeoAlt/GetAlert", in, out, opts...)
+func (c *geoAltClient) GetAlerts(ctx context.Context, in *GetAlertsReq, opts ...grpc.CallOption) (*GetAlertsResp, error) {
+	out := new(GetAlertsResp)
+	err := c.cc.Invoke(ctx, "/GeoAlt/GetAlerts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *geoAltClient) GetActiveAlerts(ctx context.Context, in *GetAlertsReq, opts ...grpc.CallOption) (*GetAlertsResp, error) {
+	out := new(GetAlertsResp)
+	err := c.cc.Invoke(ctx, "/GeoAlt/GetActiveAlerts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -726,7 +736,8 @@ type GeoAltServer interface {
 	Register(context.Context, *RegisterReq) (*RegisterResp, error)
 	GeoFeed(GeoAlt_GeoFeedServer) error
 	AddAlert(context.Context, *AddAlertReq) (*AddAlertResp, error)
-	GetAlert(context.Context, *GetAlertReq) (*GetAlertResp, error)
+	GetAlerts(context.Context, *GetAlertsReq) (*GetAlertsResp, error)
+	GetActiveAlerts(context.Context, *GetAlertsReq) (*GetAlertsResp, error)
 }
 
 func RegisterGeoAltServer(s *grpc.Server, srv GeoAltServer) {
@@ -774,8 +785,8 @@ func _GeoAlt_GeoFeed_Handler(srv interface{}, stream grpc.ServerStream) error {
 }
 
 type GeoAlt_GeoFeedServer interface {
-	Send(*GetAlertResp) error
-	Recv() (*GetAlertReq, error)
+	Send(*GetAlertsResp) error
+	Recv() (*GetAlertsReq, error)
 	grpc.ServerStream
 }
 
@@ -783,12 +794,12 @@ type geoAltGeoFeedServer struct {
 	grpc.ServerStream
 }
 
-func (x *geoAltGeoFeedServer) Send(m *GetAlertResp) error {
+func (x *geoAltGeoFeedServer) Send(m *GetAlertsResp) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *geoAltGeoFeedServer) Recv() (*GetAlertReq, error) {
-	m := new(GetAlertReq)
+func (x *geoAltGeoFeedServer) Recv() (*GetAlertsReq, error) {
+	m := new(GetAlertsReq)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -813,20 +824,38 @@ func _GeoAlt_AddAlert_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GeoAlt_GetAlert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAlertReq)
+func _GeoAlt_GetAlerts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAlertsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GeoAltServer).GetAlert(ctx, in)
+		return srv.(GeoAltServer).GetAlerts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/GeoAlt/GetAlert",
+		FullMethod: "/GeoAlt/GetAlerts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GeoAltServer).GetAlert(ctx, req.(*GetAlertReq))
+		return srv.(GeoAltServer).GetAlerts(ctx, req.(*GetAlertsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GeoAlt_GetActiveAlerts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAlertsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GeoAltServer).GetActiveAlerts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/GeoAlt/GetActiveAlerts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GeoAltServer).GetActiveAlerts(ctx, req.(*GetAlertsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -848,8 +877,12 @@ var _GeoAlt_serviceDesc = grpc.ServiceDesc{
 			Handler:    _GeoAlt_AddAlert_Handler,
 		},
 		{
-			MethodName: "GetAlert",
-			Handler:    _GeoAlt_GetAlert_Handler,
+			MethodName: "GetAlerts",
+			Handler:    _GeoAlt_GetAlerts_Handler,
+		},
+		{
+			MethodName: "GetActiveAlerts",
+			Handler:    _GeoAlt_GetActiveAlerts_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -863,44 +896,44 @@ var _GeoAlt_serviceDesc = grpc.ServiceDesc{
 	Metadata: "geoaltsvc.proto",
 }
 
-func init() { proto.RegisterFile("geoaltsvc.proto", fileDescriptor_geoaltsvc_8ecc444933883d98) }
+func init() { proto.RegisterFile("geoaltsvc.proto", fileDescriptor_geoaltsvc_5e512dd99f0f8398) }
 
-var fileDescriptor_geoaltsvc_8ecc444933883d98 = []byte{
-	// 561 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0x4d, 0x8f, 0xd3, 0x30,
-	0x10, 0x55, 0xda, 0xb4, 0x4d, 0xa6, 0x2d, 0x20, 0x0b, 0x89, 0x50, 0xd8, 0x55, 0x89, 0x90, 0xb6,
-	0x02, 0xc9, 0x82, 0xe5, 0xca, 0xa5, 0x5a, 0x89, 0xbd, 0x20, 0x0e, 0xfe, 0x03, 0x95, 0x77, 0x33,
-	0x84, 0x68, 0x9d, 0x38, 0xd8, 0xe6, 0xeb, 0xc4, 0xaf, 0xe0, 0xcc, 0x0f, 0xe2, 0xc0, 0x5f, 0x42,
-	0x9e, 0xd4, 0x9b, 0x94, 0x15, 0x48, 0x70, 0xcb, 0xbc, 0xe7, 0xb1, 0xdf, 0x3c, 0xbd, 0x09, 0xdc,
-	0x2e, 0x51, 0x4b, 0xe5, 0xec, 0xc7, 0x4b, 0xde, 0x1a, 0xed, 0x74, 0xfe, 0x2d, 0x82, 0xb9, 0xc0,
-	0xb2, 0xb2, 0x0e, 0x8d, 0xc0, 0xf7, 0xec, 0x2e, 0x4c, 0xb0, 0x96, 0x95, 0xca, 0xa2, 0x75, 0xb4,
-	0x49, 0x45, 0x57, 0xb0, 0x15, 0x24, 0xad, 0xb4, 0xf6, 0x93, 0x36, 0x45, 0x36, 0x22, 0xe2, 0xba,
-	0x66, 0x47, 0x00, 0x6f, 0x2b, 0x63, 0xdd, 0xae, 0x91, 0x35, 0x66, 0x63, 0x62, 0x53, 0x42, 0xde,
-	0xc8, 0x1a, 0xd9, 0x03, 0x48, 0x95, 0x0c, 0x6c, 0xdc, 0xf5, 0x7a, 0x80, 0xc8, 0x0c, 0x66, 0xb2,
-	0x28, 0x0c, 0x5a, 0x9b, 0x4d, 0x88, 0x0a, 0x65, 0xfe, 0x18, 0x16, 0xbd, 0x2c, 0xdb, 0x7a, 0x5d,
-	0x4e, 0x5f, 0x61, 0x13, 0x74, 0x51, 0x91, 0xbf, 0x84, 0xe4, 0xb5, 0x2e, 0xab, 0xe6, 0xbf, 0x94,
-	0xe7, 0x8f, 0x20, 0xdd, 0x77, 0xff, 0xf1, 0x81, 0xef, 0x11, 0xcc, 0xb7, 0x45, 0xb1, 0x55, 0x68,
-	0x9c, 0x7f, 0xe4, 0x0e, 0x8c, 0x95, 0x74, 0x74, 0x26, 0x12, 0xfe, 0x93, 0x90, 0xa6, 0xa4, 0xbb,
-	0x3d, 0xd2, 0x94, 0x7e, 0xa8, 0x1a, 0xad, 0x95, 0x65, 0x70, 0x23, 0x94, 0xec, 0x21, 0xa4, 0xd8,
-	0xbe, 0xc3, 0x1a, 0x8d, 0x54, 0xe4, 0x45, 0x22, 0x7a, 0x80, 0x1d, 0x03, 0x18, 0xb4, 0x5a, 0x7d,
-	0x70, 0x95, 0x6e, 0xc8, 0x8f, 0xa5, 0x18, 0x20, 0x5e, 0x61, 0x81, 0x4a, 0x7e, 0xc9, 0xa6, 0xeb,
-	0x68, 0x33, 0x16, 0x5d, 0x91, 0x1f, 0xc3, 0xa2, 0x17, 0x68, 0x5b, 0x76, 0x0b, 0x46, 0xfa, 0x8a,
-	0x04, 0x26, 0x62, 0xa4, 0xaf, 0xf2, 0xe7, 0x30, 0x3f, 0x47, 0xf7, 0x2f, 0x03, 0xe4, 0x1c, 0x16,
-	0x7d, 0x8b, 0x6d, 0xd9, 0x31, 0x4c, 0xa5, 0x2f, 0x6c, 0x16, 0xad, 0xc7, 0x9b, 0xf9, 0xe9, 0x94,
-	0x77, 0xdc, 0x1e, 0xcd, 0x7f, 0x44, 0x30, 0x21, 0xc4, 0x9f, 0xbc, 0xc4, 0xc6, 0xa1, 0xa1, 0x07,
-	0xfc, 0xc9, 0x33, 0xad, 0x4d, 0x21, 0xf6, 0x28, 0x5b, 0xc3, 0xec, 0x42, 0x9b, 0x02, 0x8d, 0xcd,
-	0x46, 0xfb, 0xab, 0xba, 0x03, 0x01, 0x66, 0xf7, 0x21, 0xbe, 0x44, 0xa5, 0xc8, 0xb9, 0xf9, 0xe9,
-	0x84, 0x9f, 0xa1, 0x52, 0x82, 0xa0, 0xa1, 0xaf, 0xf1, 0x0d, 0x5f, 0x5d, 0x55, 0xa3, 0x75, 0xb2,
-	0x6e, 0xc9, 0xb8, 0xb1, 0xe8, 0x01, 0x76, 0x0f, 0x66, 0x06, 0x65, 0xb1, 0x93, 0x6e, 0xef, 0xdc,
-	0xd4, 0x97, 0x5b, 0xd7, 0x1b, 0x3a, 0x1b, 0x1a, 0xfa, 0x14, 0x26, 0xa4, 0x29, 0x58, 0x35, 0xba,
-	0x61, 0xd5, 0xb8, 0xb7, 0xea, 0x2b, 0xc4, 0x5e, 0xa1, 0x4f, 0xf9, 0x85, 0xb4, 0xb8, 0x23, 0xed,
-	0x7e, 0xf6, 0x58, 0x24, 0x1e, 0x20, 0xf2, 0x08, 0xa0, 0x6a, 0x0a, 0xfc, 0xdc, 0xb1, 0x23, 0x62,
-	0x53, 0x42, 0x42, 0xaf, 0x41, 0xa9, 0x76, 0xd7, 0x73, 0xc7, 0x22, 0xf1, 0x00, 0x91, 0x87, 0xa1,
-	0x88, 0x7f, 0x0f, 0xc5, 0xe9, 0xcf, 0x08, 0xa6, 0xe7, 0xa8, 0xb7, 0xca, 0x9b, 0x3f, 0xa1, 0x38,
-	0xb3, 0x94, 0x87, 0xa5, 0x58, 0x01, 0xef, 0x13, 0x7e, 0x02, 0x49, 0x58, 0x29, 0xb6, 0xe0, 0x83,
-	0xa5, 0x5f, 0x2d, 0xf9, 0xc1, 0xae, 0x3d, 0x81, 0xd9, 0x39, 0xea, 0x57, 0x88, 0x05, 0x5b, 0xf0,
-	0x41, 0x78, 0x56, 0x4b, 0x3e, 0xcc, 0xc5, 0x26, 0x7a, 0x16, 0xf9, 0x4b, 0x43, 0xfc, 0xd8, 0x82,
-	0x0f, 0x56, 0x65, 0xb5, 0xe4, 0x07, 0xb9, 0x3c, 0x81, 0x24, 0x34, 0xff, 0xf5, 0xd6, 0x8b, 0x29,
-	0xfd, 0x98, 0x5e, 0xfc, 0x0a, 0x00, 0x00, 0xff, 0xff, 0x8c, 0x9b, 0x7f, 0xf4, 0xab, 0x04, 0x00,
-	0x00,
+var fileDescriptor_geoaltsvc_5e512dd99f0f8398 = []byte{
+	// 576 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0x41, 0x6f, 0xd3, 0x4c,
+	0x10, 0x95, 0x1d, 0xc7, 0xb1, 0x27, 0x49, 0xfb, 0x69, 0xf5, 0x49, 0x98, 0x40, 0xab, 0x60, 0x21,
+	0x11, 0x01, 0x32, 0x55, 0xb8, 0x72, 0x89, 0x2a, 0xd1, 0x0b, 0xe2, 0xb0, 0x7f, 0x20, 0xda, 0xc6,
+	0x83, 0xb1, 0xba, 0xf6, 0x9a, 0xdd, 0xa5, 0xc0, 0x89, 0x1b, 0xff, 0x80, 0x33, 0x3f, 0x88, 0x3f,
+	0x85, 0x76, 0x1c, 0xd7, 0x0e, 0x15, 0xa2, 0xe2, 0xe6, 0x79, 0x6f, 0x67, 0xf7, 0xcd, 0xd3, 0x1b,
+	0xc3, 0x71, 0x81, 0x4a, 0x48, 0x6b, 0xae, 0x77, 0x59, 0xa3, 0x95, 0x55, 0xe9, 0x77, 0x0f, 0xa6,
+	0x1c, 0x8b, 0xd2, 0x58, 0xd4, 0x1c, 0x3f, 0xb0, 0xff, 0x61, 0x8c, 0x95, 0x28, 0x65, 0xe2, 0x2d,
+	0xbd, 0x55, 0xcc, 0xdb, 0x82, 0x2d, 0x20, 0x6a, 0x84, 0x31, 0x9f, 0x94, 0xce, 0x13, 0x9f, 0x88,
+	0x9b, 0x9a, 0x9d, 0x00, 0xbc, 0x2b, 0xb5, 0xb1, 0xdb, 0x5a, 0x54, 0x98, 0x8c, 0x88, 0x8d, 0x09,
+	0x79, 0x2b, 0x2a, 0x64, 0x0f, 0x20, 0x96, 0xa2, 0x63, 0x83, 0xb6, 0xd7, 0x01, 0x44, 0x26, 0x30,
+	0x11, 0x79, 0xae, 0xd1, 0x98, 0x64, 0x4c, 0x54, 0x57, 0xa6, 0x8f, 0x61, 0xd6, 0xcb, 0x32, 0x8d,
+	0xd3, 0x65, 0xd5, 0x15, 0xd6, 0x9d, 0x2e, 0x2a, 0xd2, 0x57, 0x10, 0xbd, 0x51, 0x45, 0x59, 0xff,
+	0x93, 0xf2, 0xf4, 0x11, 0xc4, 0xfb, 0xee, 0x3f, 0x3e, 0xf0, 0xc3, 0x83, 0xe9, 0x26, 0xcf, 0x37,
+	0x12, 0xb5, 0x75, 0x8f, 0xfc, 0x07, 0x23, 0x29, 0x2c, 0x9d, 0xf1, 0xb8, 0xfb, 0x24, 0xa4, 0x2e,
+	0xe8, 0x6e, 0x87, 0xd4, 0x85, 0x1b, 0xaa, 0x42, 0x63, 0x44, 0xd1, 0xb9, 0xd1, 0x95, 0xec, 0x21,
+	0xc4, 0xd8, 0xbc, 0xc7, 0x0a, 0xb5, 0x90, 0xe4, 0x45, 0xc4, 0x7b, 0x80, 0x9d, 0x02, 0x68, 0x34,
+	0x4a, 0x7e, 0xb4, 0xa5, 0xaa, 0xc9, 0x8f, 0x39, 0x1f, 0x20, 0x4e, 0x61, 0x8e, 0x52, 0x7c, 0x49,
+	0xc2, 0xa5, 0xb7, 0x1a, 0xf1, 0xb6, 0x48, 0x4f, 0x61, 0xd6, 0x0b, 0x34, 0x0d, 0x3b, 0x02, 0x5f,
+	0x5d, 0x91, 0xc0, 0x88, 0xfb, 0xea, 0x2a, 0x5d, 0xc3, 0xec, 0x02, 0x2d, 0xf1, 0xe6, 0x8e, 0x13,
+	0xa4, 0x2f, 0x60, 0x3e, 0xe8, 0x31, 0x0d, 0x3b, 0x85, 0x50, 0x50, 0x95, 0x78, 0xcb, 0xd1, 0x6a,
+	0xba, 0x0e, 0xb3, 0xf6, 0xc1, 0x3d, 0x9a, 0xfe, 0xf4, 0x60, 0x4c, 0x88, 0x3b, 0xb9, 0xc3, 0xda,
+	0xa2, 0xa6, 0x17, 0xdc, 0xc9, 0x73, 0xa5, 0x74, 0xce, 0xf7, 0x28, 0x5b, 0xc2, 0xe4, 0x52, 0xe9,
+	0x1c, 0xb5, 0x49, 0xfc, 0xfd, 0x55, 0xed, 0x81, 0x0e, 0x66, 0xf7, 0x21, 0xd8, 0xa1, 0x94, 0xe4,
+	0xdd, 0x74, 0x3d, 0xce, 0xce, 0x51, 0x4a, 0x4e, 0xd0, 0xd0, 0xd9, 0xe0, 0x96, 0xb3, 0xb6, 0xac,
+	0xd0, 0x58, 0x51, 0x35, 0x64, 0xdd, 0x88, 0xf7, 0x00, 0xbb, 0x07, 0x13, 0x8d, 0x22, 0xdf, 0x0a,
+	0xbb, 0xf7, 0x2e, 0x74, 0xe5, 0xc6, 0xf6, 0x96, 0x4e, 0x86, 0x96, 0x3e, 0x83, 0x31, 0x69, 0xea,
+	0xbc, 0xf2, 0x6f, 0x79, 0x35, 0xea, 0xbd, 0xfa, 0x0a, 0x81, 0x53, 0xe8, 0x72, 0x7e, 0x29, 0x0c,
+	0x6e, 0x49, 0xbb, 0x9b, 0x3d, 0xe0, 0x91, 0x03, 0x88, 0x3c, 0x01, 0x28, 0xeb, 0x1c, 0x3f, 0xb7,
+	0xac, 0x4f, 0x6c, 0x4c, 0x48, 0xd7, 0xab, 0x51, 0xc8, 0xed, 0xcd, 0xdc, 0x01, 0x8f, 0x1c, 0x40,
+	0xe4, 0x61, 0x2c, 0x82, 0xdf, 0x63, 0xb1, 0xfe, 0xe6, 0x43, 0x78, 0x81, 0x6a, 0x23, 0x9d, 0xf9,
+	0x63, 0x0a, 0x34, 0x8b, 0xb3, 0x6e, 0x2d, 0x16, 0x90, 0xf5, 0x19, 0x7f, 0x02, 0x51, 0xb7, 0x54,
+	0x6c, 0x96, 0x0d, 0xd6, 0x7e, 0x31, 0xcf, 0x0e, 0xb6, 0xed, 0x39, 0x4c, 0x2e, 0x50, 0xbd, 0x46,
+	0xcc, 0xd9, 0x3c, 0x1b, 0xc6, 0x67, 0x71, 0x94, 0x1d, 0x24, 0x63, 0xe5, 0x9d, 0x79, 0xee, 0xda,
+	0x2e, 0x82, 0x6c, 0x96, 0x0d, 0xd6, 0x65, 0x31, 0xcf, 0x0e, 0xb2, 0xf9, 0x14, 0xe2, 0x9b, 0xee,
+	0xbf, 0x5c, 0xcc, 0xce, 0xe0, 0xd8, 0x01, 0x3b, 0x5b, 0x5e, 0xe3, 0x9d, 0x3a, 0x2e, 0x43, 0xfa,
+	0xa3, 0xbd, 0xfc, 0x15, 0x00, 0x00, 0xff, 0xff, 0xda, 0x66, 0x30, 0x26, 0xe4, 0x04, 0x00, 0x00,
 }

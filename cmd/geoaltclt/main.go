@@ -160,7 +160,7 @@ func (clt *Client) fetchCommand() *cobra.Command {
 			clt.login(username, password)
 			ctx := context.Background()
 			ctx = metadata.AppendToOutgoingContext(ctx, "token", clt.token)
-			resp, err := clt.GetAlert(ctx, &pb.GetAlertReq{
+			resp, err := clt.GetAlerts(ctx, &pb.GetAlertsReq{
 				Lat: lat,
 				Lng: lng,
 			})
